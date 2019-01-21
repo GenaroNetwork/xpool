@@ -24,3 +24,10 @@ func GetEmailByToken(token string) Token {
 	db.Where("token_res = ?",token).Last(&tokenRes)
 	return tokenRes
 }
+
+
+func DeleteToken( email string)  {
+	var token Token
+	db := database.GetDB()
+	db.Delete(&token,"email = ?", email)
+}

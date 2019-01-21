@@ -117,6 +117,7 @@ func LoginServices(email,password string) Response {
 	if passwordVal != getUser.Password {
 		return ResponseFun("登录失败",1)
 	}
+	models.DeleteToken(email)
 	token := models.Token{
 		Timestamp:time.Now().Unix(),
 		Email:email,
