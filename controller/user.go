@@ -35,6 +35,13 @@ func (u *user) GetUserByToken(c *gin.Context)  {
 	c.JSON(http.StatusOK,GetUserByTokenServices(token))
 }
 
+func (u *user) ForgetPassword (c *gin.Context) {
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	verificationcode := c.PostForm("code")
+	c.JSON(http.StatusOK,ForgetPasswordServices(email,password,verificationcode))
+}
+
 func CreateUserServices(email,password,code string) Response  {
 	emailVerify :=  VerifyEmailFormat(email)
 	if true != emailVerify {
@@ -47,7 +54,7 @@ func CreateUserServices(email,password,code string) Response  {
 
 	verificationCode := models.GetVerificationCodeByEmail(email)
 	if code == verificationCode.Code && time.Now().Unix() < verificationCode.Timestamp + 120 {
-
+		DeleteVerificationCode(verificationCode.Code)
 	}else {
 		return ResponseFun("验证码错误或已过期",0)
 	}
@@ -127,4 +134,34 @@ func GetUserByTokenServices(token string)  Response {
 		return ResponseFun(UserInfo{Email:user.Email},0)
 	}
 	return ResponseFun("获取用户信息失败",1)
+}
+
+func ForgetPasswordServices(email,password,code string) Response  {
+	emailVerify :=  VerifyEmailFormat(email)
+	if true != emailVerify {
+		return ResponseFun("email 格式错误",3)
+	}
+	getUser :=  models.GetUserByEmail(email)
+	if "" == getUser.Email {
+		return ResponseFun("密码找回失败",3)
+	}
+
+	verificationCode := models.GetVerificationCodeByEmail(email)
+	if code == verificationCode.Code && time.Now().Unix() < verificationCode.Timestamp + 120 {
+		DeleteVerificationCode(verificationCode.Code)
+	}else {
+		return ResponseFun("验证码错误或已过期",3)
+	}
+
+	saltValue := GetRandomString(10)
+	if 6 > len(password) {
+		return ResponseFun("password 长度应大于5位",3)
+	}
+	passwordVal := MD5(saltValue+MD5(password+saltValue)+saltValue)
+	models.UpdateUser(email,saltValue,passwordVal)
+	return ResponseFun("密码找回成功",0)
+}
+
+func DeleteVerificationCode(code string)  {
+	models.DeleteVerificationCode(code)
 }

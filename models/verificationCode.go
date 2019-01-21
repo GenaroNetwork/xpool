@@ -23,3 +23,9 @@ func GetVerificationCodeByEmail(email string) VerificationCode {
 	db.Where("email = ?",email).Last(&verificationCode)
 	return verificationCode
 }
+
+func DeleteVerificationCode( code string)  {
+	var verificationCode VerificationCode
+	db := database.GetDB()
+	db.Delete(&verificationCode,"code = ?", code)
+}

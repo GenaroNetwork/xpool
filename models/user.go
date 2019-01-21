@@ -24,3 +24,9 @@ func GetUserByEmail(email string) User {
 	db.Where("email = ?",email).Last(&user)
 	return user
 }
+
+func UpdateUser(email,saltValue, password string)  {
+	var user User
+	db := database.GetDB()
+	db.Model(&user).Updates(map[string]interface{}{"salt_value": saltValue, "password": password}).Where("email = ?", email)
+}

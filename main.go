@@ -42,6 +42,7 @@ func main() {
 		HomeGroup.POST("/getverificationcode",apiHandle("GetVerificationCode"), controller.User.GetVerificationCode)
 		HomeGroup.POST("/login",apiHandle("Login"), controller.User.Login)
 		HomeGroup.POST("/getuserbytoken",apiHandle("GetUserByToken"), controller.User.GetUserByToken)
+		HomeGroup.POST("/forgetpassword",apiHandle("ForgetPassword"), controller.User.ForgetPassword)
 	}
 
 	http.ListenAndServe(":"+port(), router)
@@ -71,6 +72,7 @@ func apiHandle(authority string) gin.HandlerFunc {
 			"CreateUser":1 ,
 			"GetVerificationCode":1,
 			"Login":1,
+			"ForgetPassword":1,
 		}
 		Token :=  c.Param("token")
 		if Token != "" {
