@@ -28,5 +28,5 @@ func GetUserByEmail(email string) User {
 func UpdateUser(email,saltValue, password string)  {
 	var user User
 	db := database.GetDB()
-	db.Model(&user).Updates(map[string]interface{}{"salt_value": saltValue, "password": password}).Where("email = ?", email)
+	db.Model(&user).Where("email = ?", email).Updates(map[string]interface{}{"salt_value": saltValue, "password": password})
 }

@@ -42,6 +42,13 @@ func (u *user) ForgetPassword (c *gin.Context) {
 	c.JSON(http.StatusOK,ForgetPasswordServices(email,password,verificationcode))
 }
 
+func (u *user)ResetPassword (c *gin.Context) {
+	token := c.PostForm("token")
+	password := c.PostForm("password")
+	newPassword := c.PostForm("newPassword")
+	c.JSON(http.StatusOK,ResetPasswordServices(token,password,newPassword))
+}
+
 func CreateUserServices(email,password,code string) Response  {
 	emailVerify :=  VerifyEmailFormat(email)
 	if true != emailVerify {
@@ -136,6 +143,15 @@ func GetUserByTokenServices(token string)  Response {
 	return ResponseFun("获取用户信息失败",1)
 }
 
+func GetUserInfoByToken(token string) UserInfo {
+	result := models.GetEmailByToken(token)
+	if time.Now().Unix() < result.Timestamp + 3600 {
+		user := models.GetUserByEmail(result.Email)
+		return UserInfo{Email:user.Email}
+	}
+	return UserInfo{}
+}
+
 func ForgetPasswordServices(email,password,code string) Response  {
 	emailVerify :=  VerifyEmailFormat(email)
 	if true != emailVerify {
@@ -164,4 +180,24 @@ func ForgetPasswordServices(email,password,code string) Response  {
 
 func DeleteVerificationCode(code string)  {
 	models.DeleteVerificationCode(code)
+}
+
+
+func ResetPasswordServices(token,password,newPassword string) Response  {
+	if 6 > len(newPassword) {
+		return ResponseFun("password 长度应大于5位",3)
+	}
+	UserInfo :=  GetUserInfoByToken(token)
+	if "" == UserInfo.Email {
+		return ResponseFun("token 无效",1)
+	}
+	getUser :=  models.GetUserByEmail(UserInfo.Email)
+	passwordVal := MD5(getUser.SaltValue+MD5(password+getUser.SaltValue)+getUser.SaltValue)
+	if passwordVal != getUser.Password {
+		return ResponseFun("原始密码错误",1)
+	}
+	saltValue := GetRandomString(10)
+	newPasswordVal := MD5(saltValue+MD5(newPassword+saltValue)+saltValue)
+	models.UpdateUser(UserInfo.Email,saltValue,newPasswordVal)
+	return ResponseFun("重置成功",0)
 }

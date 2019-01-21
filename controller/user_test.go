@@ -19,7 +19,7 @@ func TestGetVerificationCodeServices(t *testing.T) {
 }
 
 func TestLoginServices(t *testing.T) {
-	result := LoginServices("2581913653@qq.com","33333333")
+	result := LoginServices("2581913653@qq.com","33333355334")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
@@ -38,4 +38,10 @@ func TestForgetPasswordServices(t *testing.T) {
 
 func TestDeleteVerificationCode(t *testing.T) {
 	DeleteVerificationCode("kTg0x")
+}
+
+func TestResetPasswordServices(t *testing.T) {
+	result :=ResetPasswordServices("1Tm3tDzfBa3btDbsx7KvKQIeUxjaVQi9XtHANzoZJ8K0BXztUJ","33333355334","33333355")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
 }
