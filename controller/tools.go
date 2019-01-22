@@ -9,7 +9,7 @@ import (
 )
 
 type Response struct {
-	Status int `json:"status"`
+	Code int `json:"code"`
 	Data interface{} `json:"data"`
 }
 
@@ -18,9 +18,9 @@ type Response struct {
  * 封装返回的结果
  * status＝0 表示成功，status＝1表示未登录，status＝3 参数操作
  */
-func ResponseFun(data interface{},status int) Response {
+func ResponseFun(data interface{},code int) Response {
 	result := Response{}
-	result.Status = status
+	result.Code = code
 	result.Data = data
 	return result
 }

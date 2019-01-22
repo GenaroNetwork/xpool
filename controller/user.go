@@ -52,23 +52,23 @@ func (u *user)ResetPassword (c *gin.Context) {
 func CreateUserServices(email,password,code string) Response  {
 	emailVerify :=  VerifyEmailFormat(email)
 	if true != emailVerify {
-		return ResponseFun("email 格式错误",3)
+		return ResponseFun("email 格式错误",10000)
 	}
 	getUser :=  models.GetUserByEmail(email)
 	if "" != getUser.Email {
-		return ResponseFun("email 已存在",3)
+		return ResponseFun("email 已存在",10002)
 	}
 
 	verificationCode := models.GetVerificationCodeByEmail(email)
 	if code == verificationCode.Code && time.Now().Unix() < verificationCode.Timestamp + 120 {
 		DeleteVerificationCode(verificationCode.Code)
 	}else {
-		return ResponseFun("验证码错误或已过期",0)
+		return ResponseFun("验证码错误或已过期",10004)
 	}
 
 	saltValue := GetRandomString(10)
 	if 6 > len(password) {
-		return ResponseFun("password 长度应大于5位",3)
+		return ResponseFun("password 长度应大于5位",10006)
 	}
 	passwordVal := MD5(saltValue+MD5(password+saltValue)+saltValue)
 	user := models.User{
@@ -77,21 +77,21 @@ func CreateUserServices(email,password,code string) Response  {
 		SaltValue:saltValue,
 	}
 	models.SaveUser(&user)
-	return ResponseFun("注册成功",0)
+	return ResponseFun("注册成功",200)
 }
 
 func GetVerificationCodeServices(email string)	Response {
 	emailVerify :=  VerifyEmailFormat(email)
 	if true != emailVerify {
-		return ResponseFun("email 格式错误",3)
+		return ResponseFun("email 格式错误",10008)
 	}
 	verificationCode := models.GetVerificationCodeByEmail(email)
 	if time.Now().Unix() < verificationCode.Timestamp + 120 {
 		result := MailTemplate(verificationCode.Code,email)
 		if true == result {
-			return ResponseFun("邮件发送成功",0)
+			return ResponseFun("邮件发送成功",200)
 		}
-		return ResponseFun("邮件发送失败",0)
+		return ResponseFun("邮件发送失败",10010)
 	}
 	code := GetRandomString(5)
 	result := MailTemplate(code,email)
@@ -102,20 +102,20 @@ func GetVerificationCodeServices(email string)	Response {
 			Email:email,
 		}
 		models.SaveVerificationCode(&verificationCode)
-		return ResponseFun("邮件发送成功",0)
+		return ResponseFun("邮件发送成功",200)
 	}
-	return ResponseFun("邮件发送失败",0)
+	return ResponseFun("邮件发送失败",10012)
 }
 
 func LoginServices(email,password string) Response {
 	getUser :=  models.GetUserByEmail(email)
 	if "" == getUser.SaltValue {
-		return ResponseFun("登录失败",1)
+		return ResponseFun("登录失败",10014)
 	}
 
 	passwordVal := MD5(getUser.SaltValue+MD5(password+getUser.SaltValue)+getUser.SaltValue)
 	if passwordVal != getUser.Password {
-		return ResponseFun("登录失败",1)
+		return ResponseFun("登录失败",10016)
 	}
 	models.DeleteToken(email)
 	token := models.Token{
@@ -124,7 +124,7 @@ func LoginServices(email,password string) Response {
 		TokenRes:GetRandomString(50),
 	}
 	models.SaveToken(&token)
-	return ResponseFun(token,0)
+	return ResponseFun(token,200)
 }
 
 type UserInfo struct {
@@ -133,15 +133,15 @@ type UserInfo struct {
 
 func GetUserByTokenServices(token string)  Response {
 	if 50 != len(token) {
-		return ResponseFun("获取用户信息失败",1)
+		return ResponseFun("获取用户信息失败",10018)
 	}
 
 	result := models.GetEmailByToken(token)
 	if time.Now().Unix() < result.Timestamp + 3600 {
 		user := models.GetUserByEmail(result.Email)
-		return ResponseFun(UserInfo{Email:user.Email},0)
+		return ResponseFun(UserInfo{Email:user.Email},200)
 	}
-	return ResponseFun("获取用户信息失败",1)
+	return ResponseFun("获取用户信息失败",10020)
 }
 
 func GetUserInfoByToken(token string) UserInfo {
@@ -156,27 +156,27 @@ func GetUserInfoByToken(token string) UserInfo {
 func ForgetPasswordServices(email,password,code string) Response  {
 	emailVerify :=  VerifyEmailFormat(email)
 	if true != emailVerify {
-		return ResponseFun("email 格式错误",3)
+		return ResponseFun("email 格式错误",10022)
 	}
 	getUser :=  models.GetUserByEmail(email)
 	if "" == getUser.Email {
-		return ResponseFun("密码找回失败",3)
+		return ResponseFun("密码找回失败",10024)
 	}
 
 	verificationCode := models.GetVerificationCodeByEmail(email)
 	if code == verificationCode.Code && time.Now().Unix() < verificationCode.Timestamp + 120 {
 		DeleteVerificationCode(verificationCode.Code)
 	}else {
-		return ResponseFun("验证码错误或已过期",3)
+		return ResponseFun("验证码错误或已过期",10026)
 	}
 
 	saltValue := GetRandomString(10)
 	if 6 > len(password) {
-		return ResponseFun("password 长度应大于5位",3)
+		return ResponseFun("password 长度应大于5位",10028)
 	}
 	passwordVal := MD5(saltValue+MD5(password+saltValue)+saltValue)
 	models.UpdateUser(email,saltValue,passwordVal)
-	return ResponseFun("密码找回成功",0)
+	return ResponseFun("密码找回成功",200)
 }
 
 func DeleteVerificationCode(code string)  {
@@ -186,19 +186,19 @@ func DeleteVerificationCode(code string)  {
 
 func ResetPasswordServices(token,password,newPassword string) Response  {
 	if 6 > len(newPassword) {
-		return ResponseFun("password 长度应大于5位",3)
+		return ResponseFun("password 长度应大于5位",10030)
 	}
 	UserInfo :=  GetUserInfoByToken(token)
 	if "" == UserInfo.Email {
-		return ResponseFun("token 无效",1)
+		return ResponseFun("token 无效",10032)
 	}
 	getUser :=  models.GetUserByEmail(UserInfo.Email)
 	passwordVal := MD5(getUser.SaltValue+MD5(password+getUser.SaltValue)+getUser.SaltValue)
 	if passwordVal != getUser.Password {
-		return ResponseFun("原始密码错误",1)
+		return ResponseFun("原始密码错误",10033)
 	}
 	saltValue := GetRandomString(10)
 	newPasswordVal := MD5(saltValue+MD5(newPassword+saltValue)+saltValue)
 	models.UpdateUser(UserInfo.Email,saltValue,newPasswordVal)
-	return ResponseFun("重置成功",0)
+	return ResponseFun("重置成功",200)
 }
