@@ -136,7 +136,7 @@ func GetUserByTokenServices(token string)  Response {
 	}
 
 	result := models.GetEmailByToken(token)
-	if time.Now().Unix() < result.Timestamp + 3600 {
+	if time.Now().Unix() < result.Timestamp + 43200 {
 		user := models.GetUserByEmail(result.Email)
 		return ResponseFun(UserInfo{Email:user.Email},200)
 	}
@@ -145,7 +145,7 @@ func GetUserByTokenServices(token string)  Response {
 
 func GetUserInfoByToken(token string) UserInfo {
 	result := models.GetEmailByToken(token)
-	if time.Now().Unix() < result.Timestamp + 3600 {
+	if time.Now().Unix() < result.Timestamp + 43200 {
 		user := models.GetUserByEmail(result.Email)
 		return UserInfo{Email:user.Email,Address:user.Adderss}
 	}
