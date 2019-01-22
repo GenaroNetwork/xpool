@@ -129,6 +129,7 @@ func LoginServices(email,password string) Response {
 
 type UserInfo struct {
 	Email	string `json:"email"`
+	Address string	`json:"address"`
 }
 
 func GetUserByTokenServices(token string)  Response {
@@ -201,4 +202,17 @@ func ResetPasswordServices(token,password,newPassword string) Response  {
 	newPasswordVal := MD5(saltValue+MD5(newPassword+saltValue)+saltValue)
 	models.UpdateUser(UserInfo.Email,saltValue,newPasswordVal)
 	return ResponseFun("重置成功",200)
+}
+
+func CheckPassword(token,password string) bool {
+	UserInfo :=  GetUserInfoByToken(token)
+	if "" == UserInfo.Email {
+		return false
+	}
+	getUser :=  models.GetUserByEmail(UserInfo.Email)
+	passwordVal := MD5(getUser.SaltValue+MD5(password+getUser.SaltValue)+getUser.SaltValue)
+	if passwordVal != getUser.Password {
+		return false
+	}
+	return true
 }

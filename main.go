@@ -47,6 +47,12 @@ func main() {
 		UserGroup.POST("/resetpassword",apiHandle("ResetPassword"), controller.User.ResetPassword)
 	}
 
+	DepositGroup := router.Group("/deposit")
+	{
+		DepositGroup.POST("/adddeposit",apiHandle("AddDeposit"), controller.Deposit.AddDeposit)
+	}
+
+
 	http.ListenAndServe(":"+port(), router)
 }
 
@@ -145,5 +151,5 @@ func port() string {
 
 func migrate() {
 	db := database.GetDB()
-	db.AutoMigrate(&models.User{},&models.VerificationCode{},&models.Token{})
+	db.AutoMigrate(&models.User{},&models.VerificationCode{},&models.Token{},&models.Deposit{})
 }

@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"time"
 	"regexp"
+	"net/http"
+	"io/ioutil"
 )
 
 type Response struct {
@@ -53,4 +55,18 @@ func VerifyEmailFormat(email string) bool {
 	pattern := `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*` //匹配电子邮箱
 	reg := regexp.MustCompile(pattern)
 	return reg.MatchString(email)
+}
+
+
+func HttpGet(url string) []byte {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil
+	}
+	return body
 }

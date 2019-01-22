@@ -22,7 +22,7 @@ func SendToMail(user, password, host, to, subject, body, mailtype string) error 
 }
 
 func SendMail(Body,Subject,to string) bool {
-	err := SendToMail(fromEmail, Password, Host, to, Subject, Body, "html")
+	err := SendToMail(EMAILFROM, EMAILPASSWORD, EMAILHOST, to, Subject, Body, "html")
 	if err != nil {
 		fmt.Println(err)
 		return false
