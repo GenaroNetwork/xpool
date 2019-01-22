@@ -25,7 +25,7 @@ func SaveDeposit(deposit *Deposit)  {
 func GetDepositInfoByHsah(hsah string) Deposit {
 	var deposit Deposit
 	db := database.GetDB()
-	db.Where("hsah = ?",hsah).Last(&deposit)
+	db.Where("hash = ?",hsah).Last(&deposit)
 	return deposit
 }
 
@@ -41,6 +41,6 @@ func GetDepositListByEmail(email string,page,pageSize int) []Deposit {
 func GetDepositCountByEmail(email string) int {
 	var count int
 	db := database.GetDB()
-	db.Where("email = ?",email).Find(&Deposit{}).Count(&count)
+	db.Model(&Deposit{}).Where("email = ?",email).Count(&count)
 	return count
 }

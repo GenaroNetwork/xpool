@@ -147,7 +147,7 @@ func GetUserInfoByToken(token string) UserInfo {
 	result := models.GetEmailByToken(token)
 	if time.Now().Unix() < result.Timestamp + 3600 {
 		user := models.GetUserByEmail(result.Email)
-		return UserInfo{Email:user.Email}
+		return UserInfo{Email:user.Email,Address:user.Adderss}
 	}
 	return UserInfo{}
 }

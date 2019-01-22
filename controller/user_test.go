@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateUserServices(t *testing.T) {
-	result := CreateUserServices("2581913653@qq.com","111111","FkJPh")
+	result := CreateUserServices("2581913653@qq.com","333333888855","IP6hQ")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }

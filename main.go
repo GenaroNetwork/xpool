@@ -11,6 +11,7 @@ import (
 	"unicode"
 	"gopkg.in/bluesuncorp/validator.v5"
 	"xpool/models"
+	"github.com/gin-contrib/cors"
 )
 
 const defaultPort = "8080"
@@ -53,6 +54,9 @@ func main() {
 		DepositGroup.POST("/getdepositlist",apiHandle("GetDepositList"), controller.Deposit.GetDepositList)
 	}
 
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	router.Use(cors.New(config))
 
 	http.ListenAndServe(":"+port(), router)
 }

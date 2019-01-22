@@ -10,6 +10,7 @@ type User struct {
 	Email	string	`gorm:"index:email"`
 	SaltValue	string	`json:"salt_value"`
 	Password	string	`json:"password"`
+	Adderss		string	`json:"adderss"`
 }
 
 func SaveUser(user *User)  {

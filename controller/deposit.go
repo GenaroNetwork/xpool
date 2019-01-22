@@ -32,7 +32,7 @@ func (u *deposit) GetDepositList(c *gin.Context) {
 type TransactionInfo struct {
 	From     string 	`json:"from"`
 	To       string		`json:"to"`
-	Value	 float64	`json:"value"`
+	Value	 string		`json:"value"`
 	Status	 int		`json:"status"`
 }
 
@@ -56,7 +56,6 @@ func AddDepositServices(hash,password,token string) Response {
 		return ResponseFun("获取交易失败",20004)
 	}
 	var transactionInfo TransactionInfo
-
 	err := json.Unmarshal(result, &transactionInfo)
 	if nil != err {
 		return ResponseFun("获取交易失败",20006)
@@ -70,12 +69,15 @@ func AddDepositServices(hash,password,token string) Response {
 	if "" != depositInfo.Hash {
 		return ResponseFun("增加保证金Hash已存在",20012)
 	}
-
+	value,_ := strconv.ParseInt(transactionInfo.Value, 10, 64)
+	if 0 == value {
+		return ResponseFun("保证金为0",20011)
+	}
 	models.SaveDeposit(&models.Deposit{
 		State:1,
 		Email:userInfo.Email,
 		Hash:hash,
-		Value:transactionInfo.Value,
+		Value:Round(float64(value)/1000000000000000000.00,3),
 	})
 
 	return ResponseFun("增加保证金成功",200)
@@ -102,13 +104,14 @@ func GetDepositListServices(pageStr,pageSizeStr,token string) Response {
 		pageSize = 100
 	}
 
-	if 0 == page {
+	if 0 >= page {
 		page = 1
 	}
 
 	if 100 < pageSize {
 		pageSize = 100
 	}
+
 	return ResponseFun(DepositList{
 		DepositList:models.GetDepositListByEmail(userInfo.Email,page,pageSize),
 		Page:page,
