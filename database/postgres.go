@@ -6,7 +6,6 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"os"
 	"strconv"
-	"xpool/controller"
 )
 
 const defaultMaxConnections = 20
@@ -23,9 +22,10 @@ func GetDB() *gorm.DB {
 	return connection
 }
 
+const DATABASEURL  = ""
 func connect() *gorm.DB {
 	max := getMaxConnection()
-	conn, err := gorm.Open("mysql", controller.DATABASEURL)
+	conn, err := gorm.Open("mysql", DATABASEURL)
 	if err != nil {
 		panic(err)
 	}
