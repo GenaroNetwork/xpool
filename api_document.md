@@ -1,5 +1,9 @@
 ##### genaro xpool api document
 
+code 200 表示成功
+
+code 401 token无效/未登录
+
 ###### 1 根据邮箱获取验证码
 
 url: 
