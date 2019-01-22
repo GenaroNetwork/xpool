@@ -71,12 +71,11 @@ func CreateUserServices(email,password,code string) Response  {
 		return ResponseFun("password 长度应大于5位",10006)
 	}
 	passwordVal := MD5(saltValue+MD5(password+saltValue)+saltValue)
-	user := models.User{
+	models.SaveUser(&models.User{
 		Email:email,
 		Password:passwordVal,
 		SaltValue:saltValue,
-	}
-	models.SaveUser(&user)
+	})
 	return ResponseFun("注册成功",200)
 }
 
@@ -96,12 +95,11 @@ func GetVerificationCodeServices(email string)	Response {
 	code := GetRandomString(5)
 	result := MailTemplate(code,email)
 	if true == result {
-		verificationCode := models.VerificationCode{
+		models.SaveVerificationCode(&models.VerificationCode{
 			Code:code,
 			Timestamp:time.Now().Unix(),
 			Email:email,
-		}
-		models.SaveVerificationCode(&verificationCode)
+		})
 		return ResponseFun("邮件发送成功",200)
 	}
 	return ResponseFun("邮件发送失败",10012)

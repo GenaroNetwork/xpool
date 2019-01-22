@@ -50,6 +50,7 @@ func main() {
 	DepositGroup := router.Group("/deposit")
 	{
 		DepositGroup.POST("/adddeposit",apiHandle("AddDeposit"), controller.Deposit.AddDeposit)
+		DepositGroup.POST("/getdepositlist",apiHandle("GetDepositList"), controller.Deposit.GetDepositList)
 	}
 
 

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"xpool/models"
+	"strconv"
 )
 
 var Deposit deposit = deposit{}
@@ -17,6 +18,14 @@ func (u *deposit) AddDeposit(c *gin.Context) {
 	password := c.PostForm("password")
 	token := c.PostForm("token")
 	c.JSON(http.StatusOK,AddDepositServices(hash,password,token))
+}
+
+
+func (u *deposit) GetDepositList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,GetDepositListServices(page,pageSize,token))
 }
 
 
@@ -70,4 +79,40 @@ func AddDepositServices(hash,password,token string) Response {
 	})
 
 	return ResponseFun("增加保证金成功",200)
+}
+
+type DepositList struct {
+	DepositList []models.Deposit   `json:"depositList"`
+	Page	int	`json:"page"`
+	PageSize int `json:"pageSize"`
+	Total    int `json:"total"`
+}
+
+func GetDepositListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Address {
+		return ResponseFun("获取地址失败",20014)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 == page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+	return ResponseFun(DepositList{
+		DepositList:models.GetDepositListByEmail(userInfo.Email,page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetDepositCountByEmail(userInfo.Email),
+	},200)
 }

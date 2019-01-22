@@ -28,3 +28,19 @@ func GetDepositInfoByHsah(hsah string) Deposit {
 	db.Where("hsah = ?",hsah).Last(&deposit)
 	return deposit
 }
+
+
+func GetDepositListByEmail(email string,page,pageSize int) []Deposit {
+	var deposit []Deposit
+	db := database.GetDB()
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&deposit)
+	return deposit
+}
+
+
+func GetDepositCountByEmail(email string) int {
+	var count int
+	db := database.GetDB()
+	db.Where("email = ?",email).Find(&Deposit{}).Count(&count)
+	return count
+}
