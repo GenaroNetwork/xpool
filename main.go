@@ -14,6 +14,7 @@ import (
 )
 
 const defaultPort = "8080"
+//const defaultPort = "8081"
 
 var (
 	msgInvalidJSON     = "Invalid JSON format"
@@ -36,14 +37,14 @@ func main() {
 	migrate()
 	router := gin.Default()
 
-	HomeGroup := router.Group("/user")
+	UserGroup := router.Group("/user")
 	{
-		HomeGroup.POST("/createuser",apiHandle("CreateUser"), controller.User.CreateUser)
-		HomeGroup.POST("/getverificationcode",apiHandle("GetVerificationCode"), controller.User.GetVerificationCode)
-		HomeGroup.POST("/login",apiHandle("Login"), controller.User.Login)
-		HomeGroup.POST("/getuserbytoken",apiHandle("GetUserByToken"), controller.User.GetUserByToken)
-		HomeGroup.POST("/forgetpassword",apiHandle("ForgetPassword"), controller.User.ForgetPassword)
-		HomeGroup.POST("/resetpassword",apiHandle("ResetPassword"), controller.User.ResetPassword)
+		UserGroup.POST("/createuser",apiHandle("CreateUser"), controller.User.CreateUser)
+		UserGroup.POST("/getverificationcode",apiHandle("GetVerificationCode"), controller.User.GetVerificationCode)
+		UserGroup.POST("/login",apiHandle("Login"), controller.User.Login)
+		UserGroup.POST("/getuserbytoken",apiHandle("GetUserByToken"), controller.User.GetUserByToken)
+		UserGroup.POST("/forgetpassword",apiHandle("ForgetPassword"), controller.User.ForgetPassword)
+		UserGroup.POST("/resetpassword",apiHandle("ResetPassword"), controller.User.ResetPassword)
 	}
 
 	http.ListenAndServe(":"+port(), router)
