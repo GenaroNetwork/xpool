@@ -25,7 +25,7 @@ func TestLoginServices(t *testing.T) {
 }
 
 func TestGetUserByTokenServices(t *testing.T) {
-	result := GetUserByTokenServices("qC5TzVshcPiV2GjRZjHjx91salYCYXmFA3UyQEKVf3Y425v53v")
+	result := GetUserByTokenServices("dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }

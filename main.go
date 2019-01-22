@@ -43,6 +43,7 @@ func main() {
 		HomeGroup.POST("/login",apiHandle("Login"), controller.User.Login)
 		HomeGroup.POST("/getuserbytoken",apiHandle("GetUserByToken"), controller.User.GetUserByToken)
 		HomeGroup.POST("/forgetpassword",apiHandle("ForgetPassword"), controller.User.ForgetPassword)
+		HomeGroup.POST("/resetpassword",apiHandle("ResetPassword"), controller.User.ResetPassword)
 	}
 
 	http.ListenAndServe(":"+port(), router)
@@ -74,14 +75,17 @@ func apiHandle(authority string) gin.HandlerFunc {
 			"Login":1,
 			"ForgetPassword":1,
 		}
-		Token :=  c.Param("token")
-		if Token != "" {
+		Token :=  c.PostForm("token")
+		if "" != Token {
 			//校验token
-
-
+			userinfo := controller.GetUserInfoByToken(Token)
+			if "" == userinfo.Email {
+				c.JSON(http.StatusOK, controller.ResponseFun("token无效请登录",401))
+				c.Abort()
+				return
+			}
 		} else if 1 != ignoreValidation[authority]{
-			data :=result("",0,0)
-			c.JSON(http.StatusOK, data)
+			c.JSON(http.StatusOK, controller.ResponseFun("请登录",401))
 			c.Abort()
 			return
 		}

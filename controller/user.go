@@ -186,7 +186,7 @@ func DeleteVerificationCode(code string)  {
 
 func ResetPasswordServices(token,password,newPassword string) Response  {
 	if 6 > len(newPassword) {
-		return ResponseFun("password 长度应大于5位",10030)
+		return ResponseFun("newPassword 长度应大于5位",10030)
 	}
 	UserInfo :=  GetUserInfoByToken(token)
 	if "" == UserInfo.Email {
