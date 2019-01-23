@@ -37,6 +37,15 @@ func (u *deposit) DepositReview(c *gin.Context) {
 	c.JSON(http.StatusOK,DepositReviewServices(depositId,reason,token,password,states))
 }
 
+
+
+func (u *deposit) ExtractDeposit(c *gin.Context) {
+	value := c.PostForm("value")
+	token := c.PostForm("token")
+	password := c.PostForm("password")
+	c.JSON(http.StatusOK,ExtractDepositServices(token,value,password))
+}
+
 type TransactionInfo struct {
 	From     string 	`json:"from"`
 	To       string		`json:"to"`
@@ -170,4 +179,39 @@ func DepositReviewServices(depositId,reason,token,password,statesStr string) Res
 		return ResponseFun("审核失败",20024)
 	}
 
+}
+
+
+func ExtractDepositServices(token,valueStr,password string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Address {
+		return ResponseFun("获取地址失败",20026)
+	}
+
+	if !CheckPassword(token,password) {
+		return ResponseFun("密码错误",20028)
+	}
+
+	value,err := strconv.ParseFloat(valueStr,64)
+
+	if nil != err {
+		return ResponseFun("提取金额错误",20030)
+	}
+
+	userDepositBalanceInfo := models.GetUserDepositBalanceByEmail(userInfo.Email)
+
+	balance := Round(userDepositBalanceInfo.Balance - value,3)
+
+	if 0 > balance {
+		return ResponseFun("保证金余额不足",20032)
+	}
+
+
+	models.SaveExtractDeposit(&models.ExtractDeposit{
+		State:1,
+		Email:userInfo.Email,
+		Value:value,
+	},balance)
+
+	return ResponseFun("提取保证金成功",200)
 }

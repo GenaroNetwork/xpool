@@ -31,6 +31,18 @@ type DepositOperatingLog struct {
 	UpdateUser	uint
 }
 
+// State 1 待审核 3 审核通过   5 审核拒绝
+type ExtractDeposit struct {
+	gorm.Model
+	State	int
+	Email	string
+	Reason	string
+	Value 	float64
+	UpdateUser uint
+}
+
+
+
 func SaveDeposit(deposit *Deposit)  {
 	db := database.GetDB()
 	db.Create(deposit)
@@ -122,4 +134,8 @@ func UpdateDeposit(state int,value float64,reason,email string,depositId,update_
 
 	tx.Commit()
 	return true
+}
+
+func SaveExtractDeposit(extractDeposit *ExtractDeposit,balance float64)  {
+
 }
