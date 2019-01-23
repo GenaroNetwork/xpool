@@ -195,3 +195,94 @@ post 请求参数：
 | 10030   | newPassword 长度应大于5位|
 | 10032   | token 无效|
 | 10033   | 原始密码错误|
+
+
+###### 6 查询增加保证金的审核列表
+
+url: 
+127.0.0.1:8080/deposit/getdepositlist
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+
+返回结果：
+
+````json
+{
+    "code": 200,
+    "data": {
+        "depositList": [
+            {
+                "ID": 1,
+                "CreatedAt": "2019-01-22T18:53:56+08:00",
+                "UpdatedAt": "2019-01-22T18:53:56+08:00",
+                "DeletedAt": null,
+                "State": 1,
+                "Email": "2581913653@qq.com",
+                "Hash": "0x1e50dae433a66f4f8cd2a8e9f572661efb9bcec2737e437cfc3e82b451d73bb0",
+                "Reason": "",
+                "Value": 9.223
+            },
+            {
+                "ID": 3,
+                "CreatedAt": "2019-01-22T18:55:54+08:00",
+                "UpdatedAt": "2019-01-22T18:55:54+08:00",
+                "DeletedAt": null,
+                "State": 1,
+                "Email": "2581913653@qq.com",
+                "Hash": "0x65717a8adf52eaf949236457feb3d1f1f65ae6b6c9cb73bde780599b22024e35",
+                "Reason": "",
+                "Value": 1
+            }
+        ],
+        "page": 1,
+        "pageSize": 100,
+        "total": 2
+    }
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 20014   | token 无效|
+
+
+###### 7 增加保证金接口
+
+url: 
+127.0.0.1:8080/deposit/adddeposit
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+| hash   |  0x65717a8adf52eaf949236457feb3d1f1f65ae6b6c9cb73bde780599b22024e35      |交易hash|
+| password   |  1234560     |password|
+
+返回结果：
+
+````json
+{
+    "code": 200,
+    "data": "增加保证金成功"
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 20000   | 获取地址失败|
+| 20002   | 密码错误|
+| 20010   | hash 错误|
+| 20004  | 获取交易失败|
+| 20006   | 获取交易失败|
+| 20008   | 获取交易失败|
+| 20012   | 增加保证金Hash已存在|
+| 20010   | 保证金为0|
