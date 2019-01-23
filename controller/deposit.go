@@ -92,8 +92,8 @@ type DepositList struct {
 
 func GetDepositListServices(pageStr,pageSizeStr,token string) Response {
 	userInfo := GetUserInfoByToken(token)
-	if "" == userInfo.Address {
-		return ResponseFun("获取地址失败",20014)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20014)
 	}
 	page,err:=strconv.Atoi(pageStr)
 	if nil != err {
