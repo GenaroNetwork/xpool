@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"math"
+	"xpool/models"
 )
 
 type Response struct {
@@ -82,4 +83,24 @@ func HttpGet(url string) []byte {
 func Round(f float64, n int) float64 {
 	n10 := math.Pow10(n)
 	return math.Trunc((f+0.5/n10)*n10) / n10
+}
+
+func CheckPassword(token,password string) bool {
+	UserInfo :=  GetUserInfoByToken(token)
+	if "" == UserInfo.Email {
+		return false
+	}
+	getUser :=  models.GetUserByEmail(UserInfo.Email)
+	passwordVal := MD5(getUser.SaltValue+MD5(password+getUser.SaltValue)+getUser.SaltValue)
+	if passwordVal != getUser.Password {
+		return false
+	}
+	return true
+}
+
+func VerifyAdminRole(userInfo UserInfo) bool {
+	if 1 == userInfo.Role {
+		return true
+	}
+	return false
 }

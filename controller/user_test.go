@@ -7,19 +7,20 @@ import (
 )
 
 func TestCreateUserServices(t *testing.T) {
-	result := CreateUserServices("2581913653@qq.com","333333888855","IP6hQ","0x572856549d51f68ebcc8f15a2749d65874131a25")
+	result := CreateUserServices("1065482100@qq.com","123456","g4f6C","0x572856549d51f68ebcc8f15a2749d65874131a29")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
 
 func TestGetVerificationCodeServices(t *testing.T) {
-	result := GetVerificationCodeServices("2581913653@qq.com")
+	result := GetVerificationCodeServices("1065482100@qq.com")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
 
 func TestLoginServices(t *testing.T) {
 	result := LoginServices("2581913653@qq.com","333333888855")
+	//result := LoginServices("1065482100@qq.com","123456")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }

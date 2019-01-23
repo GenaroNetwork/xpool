@@ -11,6 +11,7 @@ type User struct {
 	SaltValue	string	`json:"salt_value"`
 	Password	string	`json:"password"`
 	Adderss		string	`json:"adderss"`
+	Role        int		`json:"role"`
 }
 
 func SaveUser(user *User)  {

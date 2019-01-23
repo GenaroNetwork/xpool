@@ -140,8 +140,10 @@ func LoginServices(email,password string) Response {
 }
 
 type UserInfo struct {
+	Id      uint		`json:"id"`
 	Email	string `json:"email"`
 	Address string	`json:"address"`
+	Role    int		`json:"role"`
 }
 
 func GetUserByTokenServices(token string)  Response {
@@ -161,7 +163,7 @@ func GetUserInfoByToken(token string) UserInfo {
 	result := models.GetEmailByToken(token)
 	if time.Now().Unix() < result.Timestamp + 43200 {
 		user := models.GetUserByEmail(result.Email)
-		return UserInfo{Email:user.Email,Address:user.Adderss}
+		return UserInfo{Email:user.Email,Address:user.Adderss,Role:user.Role,Id:user.ID}
 	}
 	return UserInfo{}
 }
@@ -214,17 +216,4 @@ func ResetPasswordServices(token,password,newPassword string) Response  {
 	newPasswordVal := MD5(saltValue+MD5(newPassword+saltValue)+saltValue)
 	models.UpdateUser(UserInfo.Email,saltValue,newPasswordVal)
 	return ResponseFun("重置成功",200)
-}
-
-func CheckPassword(token,password string) bool {
-	UserInfo :=  GetUserInfoByToken(token)
-	if "" == UserInfo.Email {
-		return false
-	}
-	getUser :=  models.GetUserByEmail(UserInfo.Email)
-	passwordVal := MD5(getUser.SaltValue+MD5(password+getUser.SaltValue)+getUser.SaltValue)
-	if passwordVal != getUser.Password {
-		return false
-	}
-	return true
 }
