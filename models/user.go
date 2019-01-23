@@ -26,6 +26,13 @@ func GetUserByEmail(email string) User {
 	return user
 }
 
+func GetUserByEthAdderss(adderss string) User {
+	var user User
+	db := database.GetDB()
+	db.Where("adderss = ?",adderss).Last(&user)
+	return user
+}
+
 func UpdateUser(email,saltValue, password string)  {
 	var user User
 	db := database.GetDB()

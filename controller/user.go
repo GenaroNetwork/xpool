@@ -15,7 +15,8 @@ func (u *user) CreateUser(c *gin.Context) {
 	email := c.PostForm("email")
 	password := c.PostForm("password")
 	verificationcode := c.PostForm("code")
-	c.JSON(http.StatusOK,CreateUserServices(email,password,verificationcode))
+	adderss := c.PostForm("adderss")
+	c.JSON(http.StatusOK,CreateUserServices(email,password,verificationcode,adderss))
 }
 
 
@@ -49,15 +50,28 @@ func (u *user)ResetPassword (c *gin.Context) {
 	c.JSON(http.StatusOK,ResetPasswordServices(token,password,newPassword))
 }
 
-func CreateUserServices(email,password,code string) Response  {
+func CreateUserServices(email,password,code,adderss string) Response  {
 	emailVerify :=  VerifyEmailFormat(email)
 	if true != emailVerify {
 		return ResponseFun("email 格式错误",10000)
 	}
+
+	adderssVerify :=  VerifyEthAdderss(adderss)
+	if true != adderssVerify {
+		return ResponseFun("gnx address 格式错误",10001)
+	}
+
+
 	getUser :=  models.GetUserByEmail(email)
 	if "" != getUser.Email {
 		return ResponseFun("email 已存在",10002)
 	}
+
+	getUser =  models.GetUserByEthAdderss(adderss)
+	if "" != getUser.Adderss {
+		return ResponseFun("gnx address 已存在",10003)
+	}
+
 
 	verificationCode := models.GetVerificationCodeByEmail(email)
 	if code == verificationCode.Code && time.Now().Unix() < verificationCode.Timestamp + 120 {

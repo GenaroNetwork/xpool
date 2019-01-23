@@ -58,6 +58,12 @@ func VerifyEmailFormat(email string) bool {
 	return reg.MatchString(email)
 }
 
+func VerifyEthAdderss(adderss string) bool {
+	pattern := `^(0x)?[0-9a-fA-F]{40}$`
+	reg := regexp.MustCompile(pattern)
+	return reg.MatchString(adderss)
+}
+
 
 func HttpGet(url string) []byte {
 	resp, err := http.Get(url)
