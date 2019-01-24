@@ -53,6 +53,9 @@ func main() {
 		DepositGroup.POST("/adddeposit",apiHandle("AddDeposit"), controller.Deposit.AddDeposit)
 		DepositGroup.POST("/getdepositlist",apiHandle("GetDepositList"), controller.Deposit.GetDepositList)
 		DepositGroup.POST("/depositreview",apiHandle("DepositReview"), controller.Deposit.DepositReview)
+		DepositGroup.POST("/extractdeposit",apiHandle("ExtractDeposit"), controller.Deposit.ExtractDeposit)
+		DepositGroup.POST("/extractdepositreview",apiHandle("ExtractDepositReview"), controller.Deposit.ExtractDepositReview)
+		DepositGroup.POST("/getextractdepositList",apiHandle("GetExtractDepositList"), controller.Deposit.GetExtractDepositList)
 	}
 
 	config := cors.DefaultConfig()
@@ -158,5 +161,5 @@ func port() string {
 func migrate() {
 	db := database.GetDB()
 	db.AutoMigrate(&models.User{},&models.VerificationCode{},&models.Token{},&models.Deposit{},
-	&models.UserDepositBalance{}, &models.DepositOperatingLog{})
+	&models.UserDepositBalance{}, &models.DepositOperatingLog{},&models.ExtractDeposit{})
 }

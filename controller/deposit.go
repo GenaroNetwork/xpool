@@ -46,6 +46,23 @@ func (u *deposit) ExtractDeposit(c *gin.Context) {
 	c.JSON(http.StatusOK,ExtractDepositServices(token,value,password))
 }
 
+
+func (u *deposit) ExtractDepositReview(c *gin.Context) {
+	extractDepositId := c.PostForm("extractDepositId")
+	reason := c.PostForm("reason")
+	states := c.PostForm("states")
+	token := c.PostForm("token")
+	password := c.PostForm("password")
+	c.JSON(http.StatusOK,ExtractDepositReviewServices(extractDepositId,reason,token,password,states))
+}
+
+func (u *deposit) GetExtractDepositList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,GetExtractDepositListServices(page,pageSize,token))
+}
+
 type TransactionInfo struct {
 	From     string 	`json:"from"`
 	To       string		`json:"to"`
@@ -97,7 +114,7 @@ func AddDepositServices(hash,password,token string) Response {
 		Value:Round(float64(value)/1000000000000000000.00,3),
 	})
 
-	return ResponseFun("增加保证金成功",200)
+	return ResponseFun("申请增加保证金成功",200)
 }
 
 type DepositList struct {
@@ -206,12 +223,88 @@ func ExtractDepositServices(token,valueStr,password string) Response {
 		return ResponseFun("保证金余额不足",20032)
 	}
 
+	result := models.SaveExtractDeposit(1, userInfo.Email, value,balance,userInfo.Id)
+	if true != result {
+		return ResponseFun("申请提取保证金失败",20034)
+	}
 
-	models.SaveExtractDeposit(&models.ExtractDeposit{
-		State:1,
-		Email:userInfo.Email,
-		Value:value,
-	},balance)
+	return ResponseFun("申请提取保证金成功",200)
+}
 
-	return ResponseFun("提取保证金成功",200)
+
+
+func ExtractDepositReviewServices(extractDepositId,reason,token,password,statesStr string) Response {
+	userInfo := GetUserInfoByToken(token)
+	states,err:=strconv.Atoi(statesStr)
+	if nil != err {
+		return ResponseFun("参数错误",20024)
+	}
+
+	if 3 != states && 5 != states {
+		return ResponseFun("参数错误",20026)
+	}
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20016)
+	}
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",20018)
+	}
+	if !CheckPassword(token,password) {
+		return ResponseFun("密码错误",20020)
+	}
+	depositInfo := models.GetExtractDepositInfoById(extractDepositId)
+	if 1 != depositInfo.State {
+		return ResponseFun("操作错误",20022)
+	}
+
+	userDepositBalanceInfo := models.GetUserDepositBalanceByEmail(depositInfo.Email)
+	var value float64
+	if 5 == states {
+		value = depositInfo.Value + userDepositBalanceInfo.Balance
+	}
+	result := models.UpdateExtractDeposit(states,value,reason,depositInfo.Email,depositInfo.ID,userInfo.Id)
+	if true == result {
+		return ResponseFun("审核成功",200)
+	}else {
+		return ResponseFun("审核失败",20024)
+	}
+
+}
+
+
+type ExtractDepositList struct {
+	ExtractDepositList []models.ExtractDeposit   `json:"extract_deposit_list"`
+	Page	int	`json:"page"`
+	PageSize int `json:"pageSize"`
+	Total    int `json:"total"`
+}
+
+func GetExtractDepositListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20014)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(ExtractDepositList{
+		ExtractDepositList:models.GetExtractDepositListByEmail(userInfo.Email,page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetExtractDepositCountByEmail(userInfo.Email),
+	},200)
 }

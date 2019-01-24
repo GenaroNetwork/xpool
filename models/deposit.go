@@ -29,6 +29,8 @@ type DepositOperatingLog struct {
 	Value float64
 	Reason,Email string
 	UpdateUser	uint
+	Balance   float64
+	LogType		int
 }
 
 // State 1 待审核 3 审核通过   5 审核拒绝
@@ -125,6 +127,7 @@ func UpdateDeposit(state int,value float64,reason,email string,depositId,update_
 		Reason:reason,
 		Email:email,
 		UpdateUser:update_user,
+		LogType:0,
 	}).Error
 
 	if nil != err {
@@ -136,6 +139,108 @@ func UpdateDeposit(state int,value float64,reason,email string,depositId,update_
 	return true
 }
 
-func SaveExtractDeposit(extractDeposit *ExtractDeposit,balance float64)  {
+func SaveExtractDeposit(state int, email string, value,balance float64,update_user uint) bool {
+	db := database.GetDB()
+	tx := db.Begin()
 
+	err := db.Create(&ExtractDeposit{
+		State:state,
+		Email:email,
+		Value:value,
+	}).Error
+
+	if nil != err {
+		tx.Rollback()
+		return false
+	}
+	err = db.Model(&UserDepositBalance{}).Where("email = ?", email).Updates(
+		map[string]interface{}{"balance": balance,"update_user":update_user}).Error
+	if nil != err {
+		tx.Rollback()
+		return false
+	}
+
+
+	err = db.Create(&DepositOperatingLog{
+		State:state,
+		Value:value,
+		Reason:"",
+		Email:email,
+		UpdateUser:update_user,
+		Balance:balance,
+		LogType:1,
+	}).Error
+
+	if nil != err {
+		tx.Rollback()
+		return false
+	}
+
+	tx.Commit()
+	return true
+}
+
+
+func GetExtractDepositInfoById(id string) ExtractDeposit {
+	var extractDeposit ExtractDeposit
+	db := database.GetDB()
+	db.Where("id = ?",id).Last(&extractDeposit)
+	return extractDeposit
+}
+
+
+func UpdateExtractDeposit(state int,value float64,reason,email string,depositId,update_user uint) bool {
+	db := database.GetDB()
+	tx := db.Begin()
+
+	err := db.Model(&ExtractDeposit{}).Where("email = ? and id = ?", email,depositId).Updates(
+		map[string]interface{}{"state": state, "reason": reason,"update_user":update_user}).Error
+
+	if nil != err {
+		tx.Rollback()
+		return false
+	}
+
+	if  5 == state {
+		err = db.Model(&UserDepositBalance{}).Where("email = ?", email).Updates(
+			map[string]interface{}{"balance": value,"update_user":update_user}).Error
+	}
+
+	if nil != err {
+		tx.Rollback()
+		return false
+	}
+
+	err = db.Create(&DepositOperatingLog{
+		State:state,
+		Value:value,
+		Reason:reason,
+		Email:email,
+		UpdateUser:update_user,
+		LogType:2,
+	}).Error
+
+	if nil != err {
+		tx.Rollback()
+		return false
+	}
+
+	tx.Commit()
+	return true
+}
+
+
+func GetExtractDepositListByEmail(email string,page,pageSize int) []ExtractDeposit {
+	var extractDeposit []ExtractDeposit
+	db := database.GetDB()
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractDeposit)
+	return extractDeposit
+}
+
+
+func GetExtractDepositCountByEmail(email string) int {
+	var count int
+	db := database.GetDB()
+	db.Model(&ExtractDeposit{}).Where("email = ?",email).Count(&count)
+	return count
 }

@@ -25,3 +25,17 @@ func TestDepositReviewServices(t *testing.T)  {
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
+
+func TestExtractDepositServices(t *testing.T) {
+	result := ExtractDepositServices("pVdXGXLVbXsVqKZEEHiBmZ5Qmj2XEbEwDqOkZir8rVpSrOTvU3","1","333333888855")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}
+
+func TestExtractDepositReviewServices(t *testing.T) {
+	result := ExtractDepositReviewServices("2","okxxx","qqm8vUwwFjHOnDLkBBey0QxERPSH6AFxACtlPEuAF7J2BuNljS","123456","5")
+
+	//result := DepositReviewServices("4","okxxx","4S4MBytl3dydYGJK2oDlcgUjXUIYCV4Nqx4Q3Ye681znhkcnXs","333333888855","3")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}
