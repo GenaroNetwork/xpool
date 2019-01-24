@@ -67,8 +67,8 @@ func CreateUserServices(email,password,code,adderss string) Response  {
 		return ResponseFun("email 已存在",10002)
 	}
 
-	getUser =  models.GetUserByEthAdderss(adderss)
-	if "" != getUser.Adderss {
+	getUser =  models.GetUserByEthAddress(adderss)
+	if "" != getUser.Address {
 		return ResponseFun("gnx address 已存在",10003)
 	}
 
@@ -163,7 +163,7 @@ func GetUserInfoByToken(token string) UserInfo {
 	result := models.GetEmailByToken(token)
 	if time.Now().Unix() < result.Timestamp + 43200 {
 		user := models.GetUserByEmail(result.Email)
-		return UserInfo{Email:user.Email,Address:user.Adderss,Role:user.Role,Id:user.ID}
+		return UserInfo{Email:user.Email,Address:user.Address,Role:user.Role,Id:user.ID}
 	}
 	return UserInfo{}
 }

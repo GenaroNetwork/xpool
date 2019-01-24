@@ -94,14 +94,14 @@ func GetUserDepositBalanceByEmail(email string) UserDepositBalance {
 
 
 func UpdateDeposit(state int,value float64,reason,email string,depositId,update_user uint,operating string) bool {
-	db := database.GetDB()
-	tx := db.Begin()
+	tx := database.GetDB()
+	db := tx.Begin()
 
 	err := db.Model(&Deposit{}).Where("email = ? and id = ?", email,depositId).Updates(
 		map[string]interface{}{"state": state, "reason": reason,"update_user":update_user}).Error
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
@@ -117,7 +117,7 @@ func UpdateDeposit(state int,value float64,reason,email string,depositId,update_
 	}
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
@@ -131,17 +131,17 @@ func UpdateDeposit(state int,value float64,reason,email string,depositId,update_
 	}).Error
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
-	tx.Commit()
+	db.Commit()
 	return true
 }
 
 func SaveExtractDeposit(state int, email string, value,balance float64,update_user uint) bool {
-	db := database.GetDB()
-	tx := db.Begin()
+	tx := database.GetDB()
+	db := tx.Begin()
 
 	err := db.Create(&ExtractDeposit{
 		State:state,
@@ -150,13 +150,13 @@ func SaveExtractDeposit(state int, email string, value,balance float64,update_us
 	}).Error
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 	err = db.Model(&UserDepositBalance{}).Where("email = ?", email).Updates(
 		map[string]interface{}{"balance": balance,"update_user":update_user}).Error
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
@@ -172,11 +172,11 @@ func SaveExtractDeposit(state int, email string, value,balance float64,update_us
 	}).Error
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
-	tx.Commit()
+	db.Commit()
 	return true
 }
 
@@ -190,14 +190,14 @@ func GetExtractDepositInfoById(id string) ExtractDeposit {
 
 
 func UpdateExtractDeposit(state int,value float64,reason,email string,depositId,update_user uint) bool {
-	db := database.GetDB()
-	tx := db.Begin()
+	tx := database.GetDB()
+	db := tx.Begin()
 
 	err := db.Model(&ExtractDeposit{}).Where("email = ? and id = ?", email,depositId).Updates(
 		map[string]interface{}{"state": state, "reason": reason,"update_user":update_user}).Error
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
@@ -207,7 +207,7 @@ func UpdateExtractDeposit(state int,value float64,reason,email string,depositId,
 	}
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
@@ -221,11 +221,11 @@ func UpdateExtractDeposit(state int,value float64,reason,email string,depositId,
 	}).Error
 
 	if nil != err {
-		tx.Rollback()
+		db.Rollback()
 		return false
 	}
 
-	tx.Commit()
+	db.Commit()
 	return true
 }
 

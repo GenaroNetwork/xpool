@@ -10,7 +10,7 @@ type User struct {
 	Email	string	`gorm:"index:email"`
 	SaltValue	string	`json:"salt_value"`
 	Password	string	`json:"password"`
-	Adderss		string	`json:"adderss"`
+	Address		string	`json:"address"`
 	Role        int		`json:"role"`
 }
 
@@ -27,10 +27,10 @@ func GetUserByEmail(email string) User {
 	return user
 }
 
-func GetUserByEthAdderss(adderss string) User {
+func GetUserByEthAddress(address string) User {
 	var user User
 	db := database.GetDB()
-	db.Where("adderss = ?",adderss).Last(&user)
+	db.Where("address = ?",address).Last(&user)
 	return user
 }
 

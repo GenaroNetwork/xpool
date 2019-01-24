@@ -58,6 +58,13 @@ func main() {
 		DepositGroup.POST("/getextractdepositlist",apiHandle("GetExtractDepositList"), controller.Deposit.GetExtractDepositList)
 	}
 
+
+	MiningGroup := router.Group("/mining")
+	{
+		MiningGroup.POST("/loanmining",apiHandle("LoanMining"), controller.Mining.LoanMining)
+		MiningGroup.POST("/loanminingreview",apiHandle("LoanMiningReview"), controller.Mining.LoanMiningReview)
+	}
+
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	router.Use(cors.New(config))
@@ -161,5 +168,6 @@ func port() string {
 func migrate() {
 	db := database.GetDB()
 	db.AutoMigrate(&models.User{},&models.VerificationCode{},&models.Token{},&models.Deposit{},
-	&models.UserDepositBalance{}, &models.DepositOperatingLog{},&models.ExtractDeposit{})
+	&models.UserDepositBalance{}, &models.DepositOperatingLog{},&models.ExtractDeposit{},
+	&models.LoanMining{},&models.LoanMiningLog{},&models.UserLoanMiningBalance{})
 }
