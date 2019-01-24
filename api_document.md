@@ -325,3 +325,131 @@ post 请求参数：
 | 20020   | 密码错误|
 | 20022   | 操作错误|
 |20024|审核失败|
+
+
+###### 8 申请提取保证金
+
+url: 
+127.0.0.1:8080/deposit/extractdeposit
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+|token|3aGFEB1Imer3qL1fra2pWi6vST5zDjLesDFH0iIPy1kYDKTGNx|token|
+|password|123456|密码|
+|value|1|提取金额|
+
+返回结果：
+
+````json
+{
+    "code": 200,
+    "data": "申请提取保证金成功"
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 20026   | 获取地址失败|
+| 20028   | 密码错误|
+| 20030   | 提取金额错误|
+| 20032  | 保证金余额不足|
+| 20034   | 申请提取保证金失败|
+
+
+###### 9 审核提取保证金
+
+url: 
+127.0.0.1:8080/deposit/extractdepositreview
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+|extractDepositId|3|需要审核提取保证金id
+|reason:||审核理由|
+|token|3aGFEB1Imer3qL1fra2pWi6vST5zDjLesDFH0iIPy1kYDKTGNx|token|
+|password|123456|密码|
+|states|3|审核状态（3 审核通过 5 审核拒绝 ）|
+
+返回结果：
+
+````json
+{
+    "code": 200,
+    "data": "审核成功"
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 20024   | 参数错误|
+| 20026   | 参数错误|
+| 20016   | token 无效|
+| 20018  | 无权限操作|
+| 20020   | 密码错误|
+| 20022   | 操作错误|
+|20024|审核失败|
+
+
+###### 10 查询审核提取保证金的审核列表
+
+url: 
+127.0.0.1:8080/deposit/getextractdepositlist
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+| page   |  1      |page|
+| pageSize   |    100    |pageSize|
+
+返回结果：
+State 1 待审核 3 审核通过   5 审核拒绝
+
+````json
+{
+    "code": 200,
+    "data": {
+        "extract_deposit_list": [
+            {
+                "ID": 1,
+                "CreatedAt": "2019-01-24T10:59:53+08:00",
+                "UpdatedAt": "2019-01-24T11:17:15+08:00",
+                "DeletedAt": null,
+                "State": 3,
+                "Email": "2581913653@qq.com",
+                "Reason": "okxxx",
+                "Value": 5,
+                "UpdateUser": 2
+            },
+            {
+                "ID": 2,
+                "CreatedAt": "2019-01-24T11:00:18+08:00",
+                "UpdatedAt": "2019-01-24T11:18:32+08:00",
+                "DeletedAt": null,
+                "State": 5,
+                "Email": "2581913653@qq.com",
+                "Reason": "okxxx",
+                "Value": 5,
+                "UpdateUser": 2
+            }
+        ],
+        "page": 1,
+        "pageSize": 2,
+        "total": 6
+    }
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 20014   | token 无效|

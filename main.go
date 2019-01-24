@@ -55,7 +55,7 @@ func main() {
 		DepositGroup.POST("/depositreview",apiHandle("DepositReview"), controller.Deposit.DepositReview)
 		DepositGroup.POST("/extractdeposit",apiHandle("ExtractDeposit"), controller.Deposit.ExtractDeposit)
 		DepositGroup.POST("/extractdepositreview",apiHandle("ExtractDepositReview"), controller.Deposit.ExtractDepositReview)
-		DepositGroup.POST("/getextractdepositList",apiHandle("GetExtractDepositList"), controller.Deposit.GetExtractDepositList)
+		DepositGroup.POST("/getextractdepositlist",apiHandle("GetExtractDepositList"), controller.Deposit.GetExtractDepositList)
 	}
 
 	config := cors.DefaultConfig()

@@ -39,3 +39,11 @@ func TestExtractDepositReviewServices(t *testing.T) {
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
+
+
+
+func TestGetExtractDepositListServices(t *testing.T)  {
+	result := GetExtractDepositListServices("1","100","pVdXGXLVbXsVqKZEEHiBmZ5Qmj2XEbEwDqOkZir8rVpSrOTvU3")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}
