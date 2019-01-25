@@ -19,8 +19,8 @@ func TestGetVerificationCodeServices(t *testing.T) {
 }
 
 func TestLoginServices(t *testing.T) {
-	//result := LoginServices("2581913653@qq.com","333333888855")
-	result := LoginServices("1065482100@qq.com","123456")
+	result := LoginServices("2581913653@qq.com","333333888855")
+	//result := LoginServices("1065482100@qq.com","123456")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }

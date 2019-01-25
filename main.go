@@ -63,6 +63,7 @@ func main() {
 	{
 		MiningGroup.POST("/loanmining",apiHandle("LoanMining"), controller.Mining.LoanMining)
 		MiningGroup.POST("/loanminingreview",apiHandle("LoanMiningReview"), controller.Mining.LoanMiningReview)
+		MiningGroup.POST("/isbindingminingaddress",apiHandle("IsBindingMiningAddress"), controller.Mining.IsBindingMiningAddress)
 	}
 
 	config := cors.DefaultConfig()

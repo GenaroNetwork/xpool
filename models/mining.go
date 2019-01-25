@@ -38,6 +38,7 @@ type UserLoanMiningBalance struct {
 	Loan    float64
 	State int
 	UpdateUser uint
+	Address	string
 }
 
 
@@ -101,7 +102,7 @@ func GetLoanMiningInfoById(id string) LoanMining {
 
 
 
-func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,update_user uint,loan float64,operating string) bool {
+func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,update_user uint,loan float64,address,operating string) bool {
 	tx := database.GetDB()
 	db := tx.Begin()
 
@@ -120,6 +121,7 @@ func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,up
 			Deposit: deposit,
 			Loan:loan,
 			State:1,
+			Address:address,
 			UpdateUser: update_user,
 		}).Error
 	}else if "update" == operating && 3 == state {

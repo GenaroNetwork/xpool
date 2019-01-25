@@ -25,8 +25,14 @@ func (u *mining) LoanMiningReview(c *gin.Context) {
 	token := c.PostForm("token")
 	password := c.PostForm("password")
 	states := c.PostForm("states")
+	address := c.PostForm("address")
+	c.JSON(http.StatusOK,LoanMiningReviewServices(loanMiningId,reason,token,password,states,address))
+}
 
-	c.JSON(http.StatusOK,LoanMiningReviewServices(loanMiningId,reason,token,password,states))
+func (u *mining) IsBindingMiningAddress(c *gin.Context) {
+	loanMiningId := c.PostForm("loanMiningId")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,IsBindingMiningAddressServices(loanMiningId,token))
 }
 
 
@@ -70,7 +76,7 @@ func LoanMiningServices(token,valueStr,password string) Response {
 }
 
 
-func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr string) Response {
+func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr,address string) Response {
 	userInfo := GetUserInfoByToken(token)
 	states,err:=strconv.Atoi(statesStr)
 	if nil != err {
@@ -95,6 +101,12 @@ func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr strin
 	}
 
 	userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(depositInfo.Email)
+	if "" == userDepositBalanceInfo.Email {
+		if true != VerifyEthAdderss(address) {
+			return ResponseFun("gnx 挖矿地址格式错误",30026)
+		}
+	}
+
 	var deposit,loan float64
 	if 3 == states {
 		deposit = depositInfo.Deposit + userDepositBalanceInfo.Deposit
@@ -107,13 +119,36 @@ func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr strin
 
 	var result bool
 	if "" == userDepositBalanceInfo.Email {
-		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,"create")
+		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,address,"create")
 	}else {
-		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,"update")
+		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,address,"update")
 	}
 	if true == result {
 		return ResponseFun("审核成功",200)
 	}else {
 		return ResponseFun("审核失败",30024)
 	}
+}
+
+
+func IsBindingMiningAddressServices(loanMiningId,token string) Response {
+
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",30028)
+	}
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",30030)
+	}
+
+	depositInfo := models.GetLoanMiningInfoById(loanMiningId)
+	if 1 != depositInfo.State {
+		return ResponseFun("操作错误",30032)
+	}
+
+	userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(depositInfo.Email)
+	if "" == userDepositBalanceInfo.Address {
+		return ResponseFun(false,200)
+	}
+	return ResponseFun(true,200)
 }

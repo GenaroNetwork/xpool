@@ -507,6 +507,7 @@ post 请求参数：
 |token|3aGFEB1Imer3qL1fra2pWi6vST5zDjLesDFH0iIPy1kYDKTGNx|token|
 |password|123456|密码|
 |states|3|审核状态（3 审核通过 5 审核拒绝 ）|
+|address|0x572856549d51f68ebcc8f15a2749d65874131a25|挖矿地址（第一次审核的时候填写，审核前先判断是否绑定挖矿地址）|
 
 返回结果：
 
@@ -528,3 +529,34 @@ post 请求参数：
 | 30020   | 密码错误|
 | 30022   | 操作错误|
 |30024|审核失败|
+
+
+###### 15 判断是否绑定挖矿地址
+
+url: 
+
+127.0.0.1:8080/mining/isbindingminingaddress
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+|loanMiningId|3|需要审核的id
+|token|3aGFEB1Imer3qL1fra2pWi6vST5zDjLesDFH0iIPy1kYDKTGNx|token|
+
+返回结果：
+
+````json
+{
+    "code": 200,
+    "data": true
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 30032   | 参数错误|
+| 30028   | token 无效|
+| 30030  | 无权限操作|
