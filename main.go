@@ -14,8 +14,8 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-//const defaultPort = "8080"
-const defaultPort = "8081"
+const defaultPort = "8080"
+//const defaultPort = "8081"
 
 var (
 	msgInvalidJSON     = "Invalid JSON format"
@@ -64,6 +64,9 @@ func main() {
 		MiningGroup.POST("/loanmining",apiHandle("LoanMining"), controller.Mining.LoanMining)
 		MiningGroup.POST("/loanminingreview",apiHandle("LoanMiningReview"), controller.Mining.LoanMiningReview)
 		MiningGroup.POST("/isbindingminingaddress",apiHandle("IsBindingMiningAddress"), controller.Mining.IsBindingMiningAddress)
+		MiningGroup.POST("/extractloanmining",apiHandle("ExtractLoanMining"), controller.Mining.ExtractLoanMining)
+		MiningGroup.POST("/extractloanminingreview",apiHandle("ExtractLoanMiningReview"), controller.Mining.ExtractLoanMiningReview)
+		MiningGroup.POST("/getLoanmininglist",apiHandle("GetLoanMiningList"), controller.Mining.GetLoanMiningList)
 	}
 
 	config := cors.DefaultConfig()
