@@ -13,7 +13,7 @@ func TestLoanMiningServices(t *testing.T) {
 }
 
 func TestLoanMiningReviewServices(t *testing.T) {
-	result := LoanMiningReviewServices("3","okxxx","qqm8vUwwFjHOnDLkBBey0QxERPSH6AFxACtlPEuAF7J2BuNljS","123456","3","")
+	result := LoanMiningReviewServices("9","okxxx","cUbHeYDx2pGKKDe9UM3bgianaIJcMRSpqF2bnFMtwMYDf9bZxR","123456","3","")
 
 	//result := LoanMiningReviewServices("4","okxxx","4S4MBytl3dydYGJK2oDlcgUjXUIYCV4Nqx4Q3Ye681znhkcnXs","333333888855","3")
 	test,_ := json.Marshal(result)
@@ -27,7 +27,7 @@ func TestExtractLoanMiningServices(t *testing.T) {
 }
 
 func TestExtractLoanMiningReviewServices(t *testing.T) {
-	result := ExtractLoanMiningReviewServices("2","ok","cUbHeYDx2pGKKDe9UM3bgianaIJcMRSpqF2bnFMtwMYDf9bZxR","123456","5")
+	result := ExtractLoanMiningReviewServices("9","ok","cUbHeYDx2pGKKDe9UM3bgianaIJcMRSpqF2bnFMtwMYDf9bZxR","123456","5")
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }

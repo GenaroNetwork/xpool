@@ -195,7 +195,7 @@ func ExtractLoanMiningServices(token,password string) Response {
 	}
 
 	if !CheckPassword(token,password) {
-		return ResponseFun("密码错误",30020)
+		return ResponseFun("密码错误",30035)
 	}
 
 	userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(userInfo.Email)
@@ -217,25 +217,25 @@ func ExtractLoanMiningReviewServices(extractLoanMiningBalanceId,reason,token,pas
 	userInfo := GetUserInfoByToken(token)
 	states,err:=strconv.Atoi(statesStr)
 	if nil != err {
-		return ResponseFun("参数错误",30024)
+		return ResponseFun("参数错误",30040)
 	}
 
 	if 3 != states && 5 != states {
-		return ResponseFun("参数错误",30026)
+		return ResponseFun("参数错误",30042)
 	}
 	if "" == userInfo.Email {
-		return ResponseFun("token 无效",30016)
+		return ResponseFun("token 无效",30044)
 	}
 	if !VerifyAdminRole(userInfo) {
-		return ResponseFun("无权限操作",30018)
+		return ResponseFun("无权限操作",30046)
 	}
 	if !CheckPassword(token,password) {
-		return ResponseFun("密码错误",30020)
+		return ResponseFun("密码错误",30048)
 	}
 
 	depositInfo := models.GetExtractLoanMiningBalanceInfoById(extractLoanMiningBalanceId)
 	if 1 != depositInfo.State {
-		return ResponseFun("操作错误",30022)
+		return ResponseFun("操作错误",30050)
 	}
 
 	userDepositBalanceInfo := models.GetUserDepositBalanceByEmail(depositInfo.Email)
@@ -254,7 +254,7 @@ func ExtractLoanMiningReviewServices(extractLoanMiningBalanceId,reason,token,pas
 	if true == result {
 		return ResponseFun("审核成功",200)
 	}else {
-		return ResponseFun("审核失败",30024)
+		return ResponseFun("审核失败",30052)
 	}
 }
 
@@ -269,7 +269,7 @@ type LoanMiningList struct {
 func GetLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
 	userInfo := GetUserInfoByToken(token)
 	if "" == userInfo.Email {
-		return ResponseFun("token 无效",20014)
+		return ResponseFun("token 无效",30054)
 	}
 	page,err:=strconv.Atoi(pageStr)
 	if nil != err {
@@ -309,7 +309,7 @@ type ExtractLoanMiningList struct {
 func ExtractLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
 	userInfo := GetUserInfoByToken(token)
 	if "" == userInfo.Email {
-		return ResponseFun("token 无效",20014)
+		return ResponseFun("token 无效",30056)
 	}
 	page,err:=strconv.Atoi(pageStr)
 	if nil != err {
