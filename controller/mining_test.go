@@ -19,3 +19,9 @@ func TestLoanMiningReviewServices(t *testing.T) {
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
+
+func TestExtractLoanMiningServices(t *testing.T) {
+	result:= ExtractLoanMiningServices("E6FLRD1qVhiRjCXSP5GD9cle7rX2RPOn5SX8Ml3fUKVPKvWZFK","333333888855")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}

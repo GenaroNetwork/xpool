@@ -67,6 +67,10 @@ func LoanMiningServices(token,valueStr,password string) Response {
 		}
 	}
 
+	if 500000 > value*LEVER + userLoanMiningBalanceInfo.Loan {
+		return ResponseFun("借贷金额不足50万，无法挖矿",30009)
+	}
+
 	result := models.SaveLoanMining(1, userInfo.Email, value,balance,userInfo.Id,value*LEVER)
 	if true != result {
 		return ResponseFun("申请借币挖矿失败",30010)
@@ -151,4 +155,28 @@ func IsBindingMiningAddressServices(loanMiningId,token string) Response {
 		return ResponseFun(false,200)
 	}
 	return ResponseFun(true,200)
+}
+
+
+func ExtractLoanMiningServices(token,password string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",30034)
+	}
+
+	if !CheckPassword(token,password) {
+		return ResponseFun("密码错误",30020)
+	}
+
+	userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(userInfo.Email)
+	if "" == userDepositBalanceInfo.Email ||  500000 > userDepositBalanceInfo.Loan {
+		return ResponseFun("你没有开始挖矿",30036)
+	}
+
+	result := models.ExtractLoanMining(userDepositBalanceInfo.ID,userDepositBalanceInfo.Loan,userDepositBalanceInfo.Deposit,userDepositBalanceInfo.Email,userInfo.Id)
+	if true != result {
+		return ResponseFun("申请失败",30038)
+	}
+
+	return ResponseFun("申请成功",200)
 }

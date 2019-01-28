@@ -14,8 +14,8 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-const defaultPort = "8080"
-//const defaultPort = "8081"
+//const defaultPort = "8080"
+const defaultPort = "8081"
 
 var (
 	msgInvalidJSON     = "Invalid JSON format"
@@ -170,5 +170,5 @@ func migrate() {
 	db := database.GetDB()
 	db.AutoMigrate(&models.User{},&models.VerificationCode{},&models.Token{},&models.Deposit{},
 	&models.UserDepositBalance{}, &models.DepositOperatingLog{},&models.ExtractDeposit{},
-	&models.LoanMining{},&models.LoanMiningLog{},&models.UserLoanMiningBalance{})
+	&models.LoanMining{},&models.LoanMiningLog{},&models.UserLoanMiningBalance{},&models.ExtractLoanMiningBalance{})
 }

@@ -41,6 +41,19 @@ type UserLoanMiningBalance struct {
 	Address	string
 }
 
+type ExtractLoanMiningBalance struct {
+	gorm.Model
+	Email string
+	Deposit float64
+	Loan    float64
+	State int
+	UpdateUser uint
+	Address	string
+	Reason string
+	DepositId uint
+}
+
+
 
 func GetUserLoanMiningBalanceByEmail(email string) UserLoanMiningBalance {
 	var userLoanMiningBalance UserLoanMiningBalance
@@ -148,6 +161,50 @@ func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,up
 		State:state,
 		Deposit:deposit,
 		Reason:reason,
+		Email:email,
+		UpdateUser:update_user,
+		LogType:0,
+		Loan:loan,
+	}).Error
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+	db.Commit()
+	return true
+}
+
+func ExtractLoanMining(depositId uint,loan,deposit float64,email string,update_user uint) bool {
+	tx := database.GetDB()
+	db := tx.Begin()
+
+	err := db.Model(&LoanMining{}).Where("email = ? and id = ?", email,depositId).Updates(
+		map[string]interface{}{"state": 0, "reason": 0,"update_user":0}).Error
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+	err = db.Create(&ExtractLoanMiningBalance{
+		Email: email,
+		Deposit: deposit,
+		Loan:loan,
+		State:1,
+		DepositId:depositId,
+	}).Error
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+	err = db.Create(&LoanMiningLog{
+		State:1,
+		Deposit:deposit,
+		Reason:"",
 		Email:email,
 		UpdateUser:update_user,
 		LogType:0,
