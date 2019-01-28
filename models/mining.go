@@ -289,3 +289,19 @@ func GetLoanMiningListCountByEmail(email string) int {
 	db.Model(&LoanMining{}).Where("email = ?",email).Count(&count)
 	return count
 }
+
+
+func GetExtractLoanMiningBalanceListByEmail(email string,page,pageSize int) []ExtractLoanMiningBalance {
+	var extractLoanMiningBalance []ExtractLoanMiningBalance
+	db := database.GetDB()
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractLoanMiningBalance)
+	return extractLoanMiningBalance
+}
+
+
+func GetExtractLoanMiningBalanceListCountByEmail(email string) int {
+	var count int
+	db := database.GetDB()
+	db.Model(&ExtractLoanMiningBalance{}).Where("email = ?",email).Count(&count)
+	return count
+}

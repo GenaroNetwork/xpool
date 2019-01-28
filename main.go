@@ -66,7 +66,9 @@ func main() {
 		MiningGroup.POST("/isbindingminingaddress",apiHandle("IsBindingMiningAddress"), controller.Mining.IsBindingMiningAddress)
 		MiningGroup.POST("/extractloanmining",apiHandle("ExtractLoanMining"), controller.Mining.ExtractLoanMining)
 		MiningGroup.POST("/extractloanminingreview",apiHandle("ExtractLoanMiningReview"), controller.Mining.ExtractLoanMiningReview)
-		MiningGroup.POST("/getLoanmininglist",apiHandle("GetLoanMiningList"), controller.Mining.GetLoanMiningList)
+		MiningGroup.POST("/getloanmininglist",apiHandle("GetLoanMiningList"), controller.Mining.GetLoanMiningList)
+		MiningGroup.POST("/getextractloanmininglist",apiHandle("GetExtractLoanMiningList"), controller.Mining.GetExtractLoanMiningList)
+
 	}
 
 	config := cors.DefaultConfig()

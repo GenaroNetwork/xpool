@@ -58,6 +58,14 @@ func (u *mining) ExtractLoanMiningReview(c *gin.Context) {
 	c.JSON(http.StatusOK,ExtractLoanMiningReviewServices(extractLoanMiningBalanceId,reason,token,password,statesStr))
 }
 
+func (u *mining) GetExtractLoanMiningList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,ExtractLoanMiningListServices(page,pageSize,token))
+}
+
+
 func LoanMiningServices(token,valueStr,password string) Response {
 	userInfo := GetUserInfoByToken(token)
 	if "" == userInfo.Address {
@@ -285,5 +293,45 @@ func GetLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
 		Page:page,
 		PageSize:pageSize,
 		Total:models.GetLoanMiningListCountByEmail(userInfo.Email),
+	},200)
+}
+
+
+
+
+type ExtractLoanMiningList struct {
+	ExtractLoanMiningList []models.ExtractLoanMiningBalance   `json:"loan_mining_list"`
+	Page	int	`json:"page"`
+	PageSize int `json:"pageSize"`
+	Total    int `json:"total"`
+}
+
+func ExtractLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20014)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(ExtractLoanMiningList{
+		ExtractLoanMiningList:models.GetExtractLoanMiningBalanceListByEmail(userInfo.Email,page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetExtractLoanMiningBalanceListCountByEmail(userInfo.Email),
 	},200)
 }
