@@ -155,7 +155,7 @@ func GetUserByTokenServices(token string)  Response {
 	result := models.GetEmailByToken(token)
 	if time.Now().Unix() < result.Timestamp + 43200 {
 		user := models.GetUserByEmail(result.Email)
-		return ResponseFun(UserInfo{Email:user.Email},200)
+		return ResponseFun(UserInfo{Email:user.Email,Address:user.Address,Role:user.Role,Id:user.ID},200)
 	}
 	return ResponseFun("获取用户信息失败",10020)
 }

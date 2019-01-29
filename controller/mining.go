@@ -10,7 +10,7 @@ import (
 var Mining mining = mining{}
 type mining struct{}
 
-const LEVER  =  100000
+const LEVER  =  10
 
 func (u *mining) LoanMining(c *gin.Context) {
 	value := c.PostForm("value")

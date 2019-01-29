@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"xpool/models"
 	"strconv"
+	"math/big"
 )
 
 var Deposit deposit = deposit{}
@@ -103,15 +104,18 @@ func AddDepositServices(hash,password,token string) Response {
 	if "" != depositInfo.Hash {
 		return ResponseFun("增加保证金Hash已存在",20012)
 	}
-	value,_ := strconv.ParseInt(transactionInfo.Value, 10, 64)
-	if 0 == value {
+	value := new(big.Int)
+	value, _ = value.SetString(transactionInfo.Value,10)
+	valueFloat,_ := new(big.Float).Quo(new(big.Float).SetInt(value), big.NewFloat(1000000000000000000)).Float64()
+
+	if 0 == valueFloat {
 		return ResponseFun("保证金为0",20011)
 	}
 	models.SaveDeposit(&models.Deposit{
 		State:1,
 		Email:userInfo.Email,
 		Hash:hash,
-		Value:Round(float64(value)/1000000000000000000.00,3),
+		Value:valueFloat,
 	})
 
 	return ResponseFun("申请增加保证金成功",200)
