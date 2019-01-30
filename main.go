@@ -68,7 +68,13 @@ func main() {
 		MiningGroup.POST("/extractloanminingreview",apiHandle("ExtractLoanMiningReview"), controller.Mining.ExtractLoanMiningReview)
 		MiningGroup.POST("/getloanmininglist",apiHandle("GetLoanMiningList"), controller.Mining.GetLoanMiningList)
 		MiningGroup.POST("/getextractloanmininglist",apiHandle("GetExtractLoanMiningList"), controller.Mining.GetExtractLoanMiningList)
+	}
 
+	BalanceGroup := router.Group("/balance")
+	{
+		BalanceGroup.POST("/extractbalance",apiHandle("ExtractBalance"), controller.Balance.ExtractBalance)
+		BalanceGroup.POST("/extractbalancereview",apiHandle("ExtractBalanceReview"), controller.Balance.ExtractBalanceReview)
+		BalanceGroup.POST("/extractbalancelist",apiHandle("ExtractBalanceList"), controller.Balance.ExtractBalanceList)
 	}
 
 	config := cors.DefaultConfig()
@@ -175,5 +181,7 @@ func migrate() {
 	db := database.GetDB()
 	db.AutoMigrate(&models.User{},&models.VerificationCode{},&models.Token{},&models.Deposit{},
 	&models.UserDepositBalance{}, &models.DepositOperatingLog{},&models.ExtractDeposit{},
-	&models.LoanMining{},&models.LoanMiningLog{},&models.UserLoanMiningBalance{},&models.ExtractLoanMiningBalance{})
+	&models.LoanMining{},&models.LoanMiningLog{},&models.UserLoanMiningBalance{},&models.ExtractLoanMiningBalance{},
+	&models.UserBalance{},&models.ExtractBalance{},&models.ExtractBalanceLog{},
+)
 }

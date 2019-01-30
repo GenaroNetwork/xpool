@@ -135,6 +135,7 @@ func LoginServices(email,password string) Response {
 		Timestamp:time.Now().Unix(),
 		Email:email,
 		TokenRes:GetRandomString(50),
+		Role:getUser.Role,
 	}
 	models.SaveToken(&token)
 	return ResponseFun(token,200)

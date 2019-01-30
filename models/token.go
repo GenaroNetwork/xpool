@@ -10,6 +10,7 @@ type Token struct {
 	Email	string	`json:"email"`
 	TokenRes	string	`gorm:"index:Token"`
 	Timestamp int64     `json:"timestamp"`
+	Role        int		`json:"role"`
 }
 
 
