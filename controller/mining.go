@@ -26,6 +26,13 @@ func (u *mining) GetLoanMiningList(c *gin.Context) {
 	c.JSON(http.StatusOK,GetLoanMiningListServices(page,pageSize,token))
 }
 
+func (u *mining) AdminGetLoanMiningList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,AdminGetLoanMiningListServices(page,pageSize,token))
+}
+
 
 func (u *mining) LoanMiningReview(c *gin.Context) {
 	loanMiningId := c.PostForm("loanMiningId")
@@ -65,6 +72,12 @@ func (u *mining) GetExtractLoanMiningList(c *gin.Context) {
 	c.JSON(http.StatusOK,ExtractLoanMiningListServices(page,pageSize,token))
 }
 
+func (u *mining) AdminGetExtractLoanMiningList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,AdminExtractLoanMiningListServices(page,pageSize,token))
+}
 
 func LoanMiningServices(token,valueStr,password string) Response {
 	userInfo := GetUserInfoByToken(token)
@@ -297,6 +310,38 @@ func GetLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
 }
 
 
+func AdminGetLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",30054)
+	}
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",20018)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(LoanMiningList{
+		LoanMiningList:models.GetLoanMiningList(page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetLoanMiningListCount(),
+	},200)
+}
 
 
 type ExtractLoanMiningList struct {
@@ -333,5 +378,38 @@ func ExtractLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
 		Page:page,
 		PageSize:pageSize,
 		Total:models.GetExtractLoanMiningBalanceListCountByEmail(userInfo.Email),
+	},200)
+}
+
+func AdminExtractLoanMiningListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",20018)
+	}
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",30056)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(ExtractLoanMiningList{
+		ExtractLoanMiningList:models.GetExtractLoanMiningBalanceList(page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetExtractLoanMiningBalanceListCount(),
 	},200)
 }

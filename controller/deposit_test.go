@@ -47,3 +47,15 @@ func TestGetExtractDepositListServices(t *testing.T)  {
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
+
+func TestAdminGetDepositListServices(t *testing.T) {
+	result := AdminGetDepositListServices("1","100","h9cbpQvcz15zyrnx7Sn3qsfCfKzSTqLaU3foCYXPKRKOdgSz97")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}
+
+func TestAdminGetExtractDepositListServices(t *testing.T) {
+	result := AdminGetExtractDepositListServices("1","100","h9cbpQvcz15zyrnx7Sn3qsfCfKzSTqLaU3foCYXPKRKOdgSz97")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}

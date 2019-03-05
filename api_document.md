@@ -906,3 +906,253 @@ State 1 待审核 3 审核通过   5 审核拒绝
 | code | 描述|
 | --------------- | ------------------- |
 | 40020   | token 无效|
+
+
+
+
+###### 23 管理员查询增加保证金的审核列表
+
+url: 
+127.0.0.1:8080/deposit/admingetdepositlist
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+| page   |  1      |page|
+| pageSize   |    100    |pageSize|
+
+返回结果：
+State 1 待审核 3 审核通过   5 审核拒绝
+
+````json
+{
+    "code": 200,
+    "data": {
+        "depositList": [
+            {
+                "ID": 1,
+                "CreatedAt": "2019-01-22T18:53:56+08:00",
+                "UpdatedAt": "2019-01-22T18:53:56+08:00",
+                "DeletedAt": null,
+                "State": 1,
+                "Email": "2581913653@qq.com",
+                "Hash": "0x1e50dae433a66f4f8cd2a8e9f572661efb9bcec2737e437cfc3e82b451d73bb0",
+                "Reason": "",
+                "Value": 9.223
+            },
+            {
+                "ID": 3,
+                "CreatedAt": "2019-01-22T18:55:54+08:00",
+                "UpdatedAt": "2019-01-22T18:55:54+08:00",
+                "DeletedAt": null,
+                "State": 1,
+                "Email": "2581913653@qq.com",
+                "Hash": "0x65717a8adf52eaf949236457feb3d1f1f65ae6b6c9cb73bde780599b22024e35",
+                "Reason": "",
+                "Value": 1
+            }
+        ],
+        "page": 1,
+        "pageSize": 100,
+        "total": 2
+    }
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 20014   | token 无效|
+| 20018   | 无权限操作|
+
+
+###### 24 管理员查询审核提取保证金的审核列表
+
+url: 
+127.0.0.1:8080/deposit/admingetextractdepositlist
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+| page   |  1      |page|
+| pageSize   |    100    |pageSize|
+
+返回结果：
+State 1 待审核 3 审核通过   5 审核拒绝
+
+````json
+{
+    "code": 200,
+    "data": {
+        "extract_deposit_list": [
+            {
+                "ID": 1,
+                "CreatedAt": "2019-01-24T10:59:53+08:00",
+                "UpdatedAt": "2019-01-24T11:17:15+08:00",
+                "DeletedAt": null,
+                "State": 3,
+                "Email": "2581913653@qq.com",
+                "Reason": "okxxx",
+                "Value": 5,
+                "UpdateUser": 2
+            },
+            {
+                "ID": 2,
+                "CreatedAt": "2019-01-24T11:00:18+08:00",
+                "UpdatedAt": "2019-01-24T11:18:32+08:00",
+                "DeletedAt": null,
+                "State": 5,
+                "Email": "2581913653@qq.com",
+                "Reason": "okxxx",
+                "Value": 5,
+                "UpdateUser": 2
+            }
+        ],
+        "page": 1,
+        "pageSize": 2,
+        "total": 6
+    }
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 20014   | token 无效|
+| 20018   | 无权限操作|
+
+
+
+###### 25 管理员查询申请借币挖矿的审核列表
+
+url: 
+
+127.0.0.1:8080/mining/admingetloanmininglist
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+| page   |  1      |page|
+| pageSize   |    100    |pageSize|
+
+返回结果：
+State 1 待审核 3 审核通过   5 审核拒绝
+
+````json
+{
+    "code": 200,
+    "data": {
+        "loan_mining_list": [
+            {
+                "ID": 3,
+                "CreatedAt": "2019-01-24T18:05:06+08:00",
+                "UpdatedAt": "2019-01-24T18:05:19+08:00",
+                "DeletedAt": null,
+                "State": 3,
+                "Email": "2581913653@qq.com",
+                "Loan": 600000,
+                "Reason": "okxxx",
+                "Deposit": 6,
+                "UpdateUser": 2
+            },
+            {
+                "ID": 4,
+                "CreatedAt": "2019-01-24T18:32:25+08:00",
+                "UpdatedAt": "2019-01-24T18:58:59+08:00",
+                "DeletedAt": null,
+                "State": 5,
+                "Email": "2581913653@qq.com",
+                "Loan": 100000,
+                "Reason": "okxxx122",
+                "Deposit": 1,
+                "UpdateUser": 2
+            }
+        ],
+        "page": 2,
+        "pageSize": 2,
+        "total": 9
+    }
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 30054   | token 无效|
+| 20018   | 无权限操作|
+
+
+
+###### 26 管理员查询申请结束挖矿审核列表
+
+url: 
+
+127.0.0.1:8080/mining/admingetextractloanmininglist
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+| page   |  1      |page|
+| pageSize   |    100    |pageSize|
+
+返回结果：
+State 1 待审核 3 审核通过   5 审核拒绝
+
+````json
+{
+    "code": 200,
+    "data": {
+        "loan_mining_list": [
+            {
+                "ID": 3,
+                "CreatedAt": "2019-01-28T14:19:57+08:00",
+                "UpdatedAt": "2019-01-28T15:15:33+08:00",
+                "DeletedAt": null,
+                "Email": "2581913653@qq.com",
+                "Deposit": 1,
+                "Loan": 500000,
+                "State": 3,
+                "UpdateUser": 2,
+                "Address": "",
+                "Reason": "ok",
+                "DepositId": 2
+            },
+            {
+                "ID": 4,
+                "CreatedAt": "2019-01-28T14:21:22+08:00",
+                "UpdatedAt": "2019-01-28T14:21:22+08:00",
+                "DeletedAt": null,
+                "Email": "2581913653@qq.com",
+                "Deposit": 1,
+                "Loan": 500000,
+                "State": 1,
+                "UpdateUser": 0,
+                "Address": "",
+                "Reason": "",
+                "DepositId": 2
+            }
+        ],
+        "page": 2,
+        "pageSize": 2,
+        "total": 5
+    }
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 30056   | token 无效|
+| 20018   | 无权限操作|

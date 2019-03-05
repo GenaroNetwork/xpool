@@ -31,3 +31,15 @@ func TestExtractLoanMiningReviewServices(t *testing.T) {
 	test,_ := json.Marshal(result)
 	fmt.Println(string(test[:]))
 }
+
+func TestAdminGetLoanMiningListServices(t *testing.T) {
+	result := AdminGetLoanMiningListServices("1","100","h9cbpQvcz15zyrnx7Sn3qsfCfKzSTqLaU3foCYXPKRKOdgSz97")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}
+
+func TestAdminExtractLoanMiningListServices(t *testing.T) {
+	result := AdminExtractLoanMiningListServices("1","100","h9cbpQvcz15zyrnx7Sn3qsfCfKzSTqLaU3foCYXPKRKOdgSz97")
+	test,_ := json.Marshal(result)
+	fmt.Println(string(test[:]))
+}

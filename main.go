@@ -52,10 +52,12 @@ func main() {
 	{
 		DepositGroup.POST("/adddeposit",apiHandle("AddDeposit"), controller.Deposit.AddDeposit)
 		DepositGroup.POST("/getdepositlist",apiHandle("GetDepositList"), controller.Deposit.GetDepositList)
+		DepositGroup.POST("/admingetdepositlist",apiHandle("AdminGetDepositList"), controller.Deposit.AdminGetDepositList)
 		DepositGroup.POST("/depositreview",apiHandle("DepositReview"), controller.Deposit.DepositReview)
 		DepositGroup.POST("/extractdeposit",apiHandle("ExtractDeposit"), controller.Deposit.ExtractDeposit)
 		DepositGroup.POST("/extractdepositreview",apiHandle("ExtractDepositReview"), controller.Deposit.ExtractDepositReview)
 		DepositGroup.POST("/getextractdepositlist",apiHandle("GetExtractDepositList"), controller.Deposit.GetExtractDepositList)
+		DepositGroup.POST("/admingetextractdepositlist",apiHandle("AdminGetExtractDepositList"), controller.Deposit.AdminGetExtractDepositList)
 	}
 
 
@@ -68,6 +70,8 @@ func main() {
 		MiningGroup.POST("/extractloanminingreview",apiHandle("ExtractLoanMiningReview"), controller.Mining.ExtractLoanMiningReview)
 		MiningGroup.POST("/getloanmininglist",apiHandle("GetLoanMiningList"), controller.Mining.GetLoanMiningList)
 		MiningGroup.POST("/getextractloanmininglist",apiHandle("GetExtractLoanMiningList"), controller.Mining.GetExtractLoanMiningList)
+		MiningGroup.POST("/admingetloanmininglist",apiHandle("AdminGetLoanMiningList"), controller.Mining.AdminGetLoanMiningList)
+		MiningGroup.POST("/admingetextractloanmininglist",apiHandle("AdminGetExtractLoanMiningList"), controller.Mining.AdminGetExtractLoanMiningList)
 	}
 
 	BalanceGroup := router.Group("/balance")

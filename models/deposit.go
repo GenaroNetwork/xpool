@@ -66,11 +66,24 @@ func GetDepositListByEmail(email string,page,pageSize int) []Deposit {
 	return deposit
 }
 
+func GetDepositList(page,pageSize int) []Deposit {
+	var deposit []Deposit
+	db := database.GetDB()
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&deposit)
+	return deposit
+}
 
 func GetDepositCountByEmail(email string) int {
 	var count int
 	db := database.GetDB()
 	db.Model(&Deposit{}).Where("email = ?",email).Count(&count)
+	return count
+}
+
+func GetDepositCount() int {
+	var count int
+	db := database.GetDB()
+	db.Model(&Deposit{}).Count(&count)
 	return count
 }
 
@@ -242,5 +255,21 @@ func GetExtractDepositCountByEmail(email string) int {
 	var count int
 	db := database.GetDB()
 	db.Model(&ExtractDeposit{}).Where("email = ?",email).Count(&count)
+	return count
+}
+
+
+func GetExtractDepositList(page,pageSize int) []ExtractDeposit {
+	var extractDeposit []ExtractDeposit
+	db := database.GetDB()
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractDeposit)
+	return extractDeposit
+}
+
+
+func GetExtractDepositCount() int {
+	var count int
+	db := database.GetDB()
+	db.Model(&ExtractDeposit{}).Count(&count)
 	return count
 }

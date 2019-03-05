@@ -29,6 +29,13 @@ func (u *deposit) GetDepositList(c *gin.Context) {
 	c.JSON(http.StatusOK,GetDepositListServices(page,pageSize,token))
 }
 
+func (u *deposit) AdminGetDepositList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,AdminGetDepositListServices(page,pageSize,token))
+}
+
 func (u *deposit) DepositReview(c *gin.Context) {
 	depositId := c.PostForm("depositId")
 	reason := c.PostForm("reason")
@@ -62,6 +69,13 @@ func (u *deposit) GetExtractDepositList(c *gin.Context) {
 	pageSize := c.PostForm("pageSize")
 	token := c.PostForm("token")
 	c.JSON(http.StatusOK,GetExtractDepositListServices(page,pageSize,token))
+}
+
+func (u *deposit) AdminGetExtractDepositList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,AdminGetExtractDepositListServices(page,pageSize,token))
 }
 
 type TransactionInfo struct {
@@ -155,6 +169,39 @@ func GetDepositListServices(pageStr,pageSizeStr,token string) Response {
 		Page:page,
 		PageSize:pageSize,
 		Total:models.GetDepositCountByEmail(userInfo.Email),
+	},200)
+}
+
+func AdminGetDepositListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",20018)
+	}
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20014)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(DepositList{
+		DepositList:models.GetDepositList(page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetDepositCount(),
 	},200)
 }
 
@@ -310,5 +357,41 @@ func GetExtractDepositListServices(pageStr,pageSizeStr,token string) Response {
 		Page:page,
 		PageSize:pageSize,
 		Total:models.GetExtractDepositCountByEmail(userInfo.Email),
+	},200)
+}
+
+
+func AdminGetExtractDepositListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20014)
+	}
+
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",20018)
+	}
+
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(ExtractDepositList{
+		ExtractDepositList:models.GetExtractDepositList(page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetExtractDepositCount(),
 	},200)
 }
