@@ -1156,3 +1156,75 @@ State 1 待审核 3 审核通过   5 审核拒绝
 | --------------- | ------------------- |
 | 30056   | token 无效|
 | 20018   | 无权限操作|
+
+
+
+###### 27 查询申请提取余额审核列表
+
+url: 
+
+127.0.0.1:8080/balance/adminextractbalancelist
+
+post 请求参数：
+
+| 参数 | 实例 |描述|
+| --------------- | ------------------- |------------------- |
+| token   |  dikcggoeqBdELKIL08I3nS5TrpMcrF3OyPMumM5vsn70JgJBqs      |token|
+| page   |  1      |page|
+| pageSize   |    100    |pageSize|
+
+返回结果：
+State 1 待审核 3 审核通过   5 审核拒绝
+
+````json
+{
+    "code": 200,
+    "data": {
+        "extract_balance_list": [
+            {
+                "ID": 3,
+                "CreatedAt": "2019-01-30T12:08:25+08:00",
+                "UpdatedAt": "2019-01-30T12:14:38+08:00",
+                "DeletedAt": null,
+                "Email": "2581913653@qq.com",
+                "Balance": 524568,
+                "State": 3,
+                "Reason": "",
+                "UpdateUser": 1
+            },
+            {
+                "ID": 4,
+                "CreatedAt": "2019-01-30T12:15:17+08:00",
+                "UpdatedAt": "2019-01-30T12:15:52+08:00",
+                "DeletedAt": null,
+                "Email": "2581913653@qq.com",
+                "Balance": 524568,
+                "State": 5,
+                "Reason": "",
+                "UpdateUser": 1
+            },
+            {
+                "ID": 5,
+                "CreatedAt": "2019-01-30T14:42:15+08:00",
+                "UpdatedAt": "2019-01-30T14:43:54+08:00",
+                "DeletedAt": null,
+                "Email": "2581913653@qq.com",
+                "Balance": 524568.55,
+                "State": 3,
+                "Reason": "ok",
+                "UpdateUser": 1
+            }
+        ],
+        "page": 1,
+        "pageSize": 100,
+        "total": 3
+    }
+}
+````
+
+错误码
+
+| code | 描述|
+| --------------- | ------------------- |
+| 40020   | token 无效|
+| 20018   | 无权限操作|

@@ -177,3 +177,19 @@ func GetExtractBalanceListCountByEmail(email string) int {
 	db.Model(&ExtractBalance{}).Where("email = ?",email).Count(&count)
 	return count
 }
+
+
+func GetExtractBalanceList(page,pageSize int) []ExtractBalance {
+	var extractBalance []ExtractBalance
+	db := database.GetDB()
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractBalance)
+	return extractBalance
+}
+
+
+func GetExtractBalanceListCount() int {
+	var count int
+	db := database.GetDB()
+	db.Model(&ExtractBalance{}).Count(&count)
+	return count
+}

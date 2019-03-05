@@ -34,6 +34,13 @@ func (u *balance) ExtractBalanceList(c *gin.Context) {
 	c.JSON(http.StatusOK,GetExtractBalanceListServices(page,pageSize,token))
 }
 
+func (u *balance) AdminExtractBalanceList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,AdminGetExtractBalanceListServices(page,pageSize,token))
+}
+
 func ExtractBalanceServices(token,password string) Response {
 	userInfo := GetUserInfoByToken(token)
 	if "" == userInfo.Email {
@@ -145,5 +152,39 @@ func GetExtractBalanceListServices(pageStr,pageSizeStr,token string) Response {
 		Page:page,
 		PageSize:pageSize,
 		Total:models.GetExtractBalanceListCountByEmail(userInfo.Email),
+	},200)
+}
+
+
+func AdminGetExtractBalanceListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",40020)
+	}
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",20018)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(ExtractBalanceList{
+		ExtractBalanceList:models.GetExtractBalanceList(page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.GetExtractBalanceListCount(),
 	},200)
 }

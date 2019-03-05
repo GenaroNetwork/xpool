@@ -79,6 +79,7 @@ func main() {
 		BalanceGroup.POST("/extractbalance",apiHandle("ExtractBalance"), controller.Balance.ExtractBalance)
 		BalanceGroup.POST("/extractbalancereview",apiHandle("ExtractBalanceReview"), controller.Balance.ExtractBalanceReview)
 		BalanceGroup.POST("/extractbalancelist",apiHandle("ExtractBalanceList"), controller.Balance.ExtractBalanceList)
+		BalanceGroup.POST("/adminextractbalancelist",apiHandle("AdminExtractBalanceList"), controller.Balance.AdminExtractBalanceList)
 	}
 
 	config := cors.DefaultConfig()
