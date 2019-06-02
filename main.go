@@ -61,6 +61,7 @@ func main() {
 		DepositGroup.POST("/extractdepositreview",apiHandle("ExtractDepositReview"), controller.Deposit.ExtractDepositReview)
 		DepositGroup.POST("/getextractdepositlist",apiHandle("GetExtractDepositList"), controller.Deposit.GetExtractDepositList)
 		DepositGroup.POST("/admingetextractdepositlist",apiHandle("AdminGetExtractDepositList"), controller.Deposit.AdminGetExtractDepositList)
+		DepositGroup.POST("/deposit_balance",apiHandle("DepositBalance"), controller.Deposit.DepositBalance)
 	}
 
 
