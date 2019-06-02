@@ -22,7 +22,7 @@ func GetDB() *gorm.DB {
 	return connection
 }
 
-const DATABASEURL  = ""
+const DATABASEURL  = "root:@/xpool?charset=utf8&parseTime=True&loc=Local"
 func connect() *gorm.DB {
 	max := getMaxConnection()
 	conn, err := gorm.Open("mysql", DATABASEURL)
