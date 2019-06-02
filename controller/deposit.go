@@ -78,6 +78,11 @@ func (u *deposit) AdminGetExtractDepositList(c *gin.Context) {
 	c.JSON(http.StatusOK,AdminGetExtractDepositListServices(page,pageSize,token))
 }
 
+func (u *deposit) DepositBalance(c *gin.Context)  {
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,DepositBalanceServices(token))
+}
+
 type TransactionInfo struct {
 	From     string 	`json:"from"`
 	To       string		`json:"to"`
@@ -394,4 +399,12 @@ func AdminGetExtractDepositListServices(pageStr,pageSizeStr,token string) Respon
 		PageSize:pageSize,
 		Total:models.GetExtractDepositCount(),
 	},200)
+}
+
+func DepositBalanceServices(token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20014)
+	}
+	return ResponseFun(models.GetUserDepositBalanceByEmail(userInfo.Email).Balance,200)
 }
