@@ -166,7 +166,7 @@ func AddUserBalance(balance float64,email string,operating string) bool {
 func GetExtractBalanceListByEmail(email string,page,pageSize int) []ExtractBalance {
 	var extractBalance []ExtractBalance
 	db := database.GetDB()
-	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractBalance)
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractBalance)
 	return extractBalance
 }
 
@@ -182,7 +182,7 @@ func GetExtractBalanceListCountByEmail(email string) int {
 func GetExtractBalanceList(page,pageSize int) []ExtractBalance {
 	var extractBalance []ExtractBalance
 	db := database.GetDB()
-	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractBalance)
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractBalance)
 	return extractBalance
 }
 

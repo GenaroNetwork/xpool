@@ -278,7 +278,7 @@ func UpdateExtractLoanMining(state int,deposit,loan float64,reason,email string,
 func GetLoanMiningListByEmail(email string,page,pageSize int) []LoanMining {
 	var loanMining []LoanMining
 	db := database.GetDB()
-	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&loanMining)
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&loanMining)
 	return loanMining
 }
 
@@ -294,7 +294,7 @@ func GetLoanMiningListCountByEmail(email string) int {
 func GetLoanMiningList(page,pageSize int) []LoanMining {
 	var loanMining []LoanMining
 	db := database.GetDB()
-	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&loanMining)
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&loanMining)
 	return loanMining
 }
 
@@ -310,7 +310,7 @@ func GetLoanMiningListCount() int {
 func GetExtractLoanMiningBalanceListByEmail(email string,page,pageSize int) []ExtractLoanMiningBalance {
 	var extractLoanMiningBalance []ExtractLoanMiningBalance
 	db := database.GetDB()
-	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractLoanMiningBalance)
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractLoanMiningBalance)
 	return extractLoanMiningBalance
 }
 
@@ -325,7 +325,7 @@ func GetExtractLoanMiningBalanceListCountByEmail(email string) int {
 func GetExtractLoanMiningBalanceList(page,pageSize int) []ExtractLoanMiningBalance {
 	var extractLoanMiningBalance []ExtractLoanMiningBalance
 	db := database.GetDB()
-	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractLoanMiningBalance)
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractLoanMiningBalance)
 	return extractLoanMiningBalance
 }
 

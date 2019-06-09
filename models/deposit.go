@@ -62,14 +62,14 @@ func GetDepositInfoByHsah(hsah string) Deposit {
 func GetDepositListByEmail(email string,page,pageSize int) []Deposit {
 	var deposit []Deposit
 	db := database.GetDB()
-	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&deposit)
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&deposit)
 	return deposit
 }
 
 func GetDepositList(page,pageSize int) []Deposit {
 	var deposit []Deposit
 	db := database.GetDB()
-	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&deposit)
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&deposit)
 	return deposit
 }
 
@@ -246,7 +246,7 @@ func UpdateExtractDeposit(state int,value float64,reason,email string,depositId,
 func GetExtractDepositListByEmail(email string,page,pageSize int) []ExtractDeposit {
 	var extractDeposit []ExtractDeposit
 	db := database.GetDB()
-	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractDeposit)
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractDeposit)
 	return extractDeposit
 }
 
@@ -262,7 +262,7 @@ func GetExtractDepositCountByEmail(email string) int {
 func GetExtractDepositList(page,pageSize int) []ExtractDeposit {
 	var extractDeposit []ExtractDeposit
 	db := database.GetDB()
-	db.Limit(pageSize).Offset((page - 1) * pageSize).Find(&extractDeposit)
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractDeposit)
 	return extractDeposit
 }
 
