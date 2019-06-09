@@ -79,6 +79,11 @@ func (u *mining) AdminGetExtractLoanMiningList(c *gin.Context) {
 	c.JSON(http.StatusOK,AdminExtractLoanMiningListServices(page,pageSize,token))
 }
 
+func (u *mining) UserLoanMiningBalance(c *gin.Context) {
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,UserLoanMiningBalanceServices(token))
+}
+
 func LoanMiningServices(token,valueStr,password string) Response {
 	userInfo := GetUserInfoByToken(token)
 	if "" == userInfo.Address {
@@ -412,4 +417,14 @@ func AdminExtractLoanMiningListServices(pageStr,pageSizeStr,token string) Respon
 		PageSize:pageSize,
 		Total:models.GetExtractLoanMiningBalanceListCount(),
 	},200)
+}
+
+
+func UserLoanMiningBalanceServices(token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",30034)
+	}
+	userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(userInfo.Email)
+	return ResponseFun(userDepositBalanceInfo,200)
 }

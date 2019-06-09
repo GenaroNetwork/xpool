@@ -76,6 +76,7 @@ func main() {
 		MiningGroup.POST("/getextractloanmininglist",apiHandle("GetExtractLoanMiningList"), controller.Mining.GetExtractLoanMiningList)
 		MiningGroup.POST("/admingetloanmininglist",apiHandle("AdminGetLoanMiningList"), controller.Mining.AdminGetLoanMiningList)
 		MiningGroup.POST("/admingetextractloanmininglist",apiHandle("AdminGetExtractLoanMiningList"), controller.Mining.AdminGetExtractLoanMiningList)
+		MiningGroup.POST("/user_loan_mining_balance",apiHandle("UserLoanMiningBalance"), controller.Mining.UserLoanMiningBalance)
 	}
 
 	BalanceGroup := router.Group("/balance")

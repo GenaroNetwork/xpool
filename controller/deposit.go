@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"encoding/json"
-	"xpool/models"
-	"strconv"
+	"github.com/gin-gonic/gin"
 	"math/big"
+	"net/http"
+	"strconv"
+	"xpool/models"
 )
 
 var Deposit deposit = deposit{}

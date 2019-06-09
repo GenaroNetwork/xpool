@@ -180,7 +180,7 @@ func ExtractLoanMining(depositId uint,loan,deposit float64,email string,update_u
 	tx := database.GetDB()
 	db := tx.Begin()
 
-	err := db.Model(&UserLoanMiningBalance{}).Where("email = ? and id = ?", email,depositId).Updates(
+	err := db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
 		map[string]interface{}{"loan": 0, "deposit": 0,"update_user":update_user}).Error
 
 	if nil != err {
@@ -245,7 +245,7 @@ func UpdateExtractLoanMining(state int,deposit,loan float64,reason,email string,
 		err = db.Model(&UserDepositBalance{}).Where("email = ?", email).Updates(
 			map[string]interface{}{"balance": deposit,"update_user":update_user}).Error
 	}else if 5 == state {
-		err = db.Model(&UserLoanMiningBalance{}).Where("email = ? and id = ?", email,depositId).Updates(
+		err = db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
 			map[string]interface{}{"loan": loan, "deposit": deposit,"update_user":update_user}).Error
 	}
 
