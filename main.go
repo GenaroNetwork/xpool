@@ -87,6 +87,12 @@ func main() {
 		BalanceGroup.POST("/adminextractbalancelist",apiHandle("AdminExtractBalanceList"), controller.Balance.AdminExtractBalanceList)
 	}
 
+	IncomeGroup := router.Group("/income")
+	{
+		IncomeGroup.POST("/income_total",apiHandle("IncomeTotal"), controller.Income.IncomeTotal)
+		IncomeGroup.POST("/income_balance",apiHandle("IncomeBalance"), controller.Income.IncomeBalance)
+	}
+
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	router.Use(cors.New(config))
