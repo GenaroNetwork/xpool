@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"xpool/models"
 )
 
 var Income income = income{}
@@ -25,8 +26,8 @@ func IncomeTotalServices(token string) Response {
 	if "" == userInfo.Email {
 		return ResponseFun("token 无效",40000)
 	}
-
-	return ResponseFun(8000,200)
+	getIncomeInfoById := models.GetIncomeInfoById(userInfo.Email)
+	return ResponseFun(getIncomeInfoById.TotalIncome,200)
 }
 
 func IncomeBalanceServices(token string) Response {
@@ -34,5 +35,5 @@ func IncomeBalanceServices(token string) Response {
 	if "" == userInfo.Email {
 		return ResponseFun("token 无效",40002)
 	}
-	return ResponseFun(3340,200)
-}
+	getIncomeInfoById := models.GetIncomeInfoById(userInfo.Email)
+	return ResponseFun(getIncomeInfoById.IncomeBalance,200)}
