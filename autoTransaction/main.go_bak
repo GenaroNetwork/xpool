@@ -1,0 +1,15 @@
+package main
+
+import (
+	"time"
+	"fmt"
+	"dev-meeting/bank/autoTransaction"
+)
+
+func main()  {
+	for true {
+		currentTime:=time.Now()
+		fmt.Println(currentTime)
+		autoTransaction.SendtransactionAll()
+	}
+}

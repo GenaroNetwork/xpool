@@ -96,7 +96,7 @@ func main() {
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	router.Use(cors.New(config))
-
+	go controller.BenefitCalculation()
 	http.ListenAndServe(":"+port(), router)
 }
 

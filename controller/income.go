@@ -36,4 +36,5 @@ func IncomeBalanceServices(token string) Response {
 		return ResponseFun("token 无效",40002)
 	}
 	getIncomeInfoById := models.GetIncomeInfoById(userInfo.Email)
-	return ResponseFun(getIncomeInfoById.IncomeBalance,200)}
+	return ResponseFun(getIncomeInfoById.IncomeBalance,200)
+}
