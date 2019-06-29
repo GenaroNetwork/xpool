@@ -91,6 +91,8 @@ func main() {
 	{
 		IncomeGroup.POST("/income_total",apiHandle("IncomeTotal"), controller.Income.IncomeTotal)
 		IncomeGroup.POST("/income_balance",apiHandle("IncomeBalance"), controller.Income.IncomeBalance)
+		IncomeGroup.POST("/extract_income_balance",apiHandle("ExtractIncomeBalance"), controller.Income.ExtractIncomeBalance)
+		IncomeGroup.POST("/extract_income_list",apiHandle("ExtractIncomeList"), controller.Income.ExtractIncomeList)
 	}
 
 	config := cors.DefaultConfig()

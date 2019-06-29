@@ -21,10 +21,32 @@ type IncomeLog struct {
 	UpdateUser uint
 }
 
+// State 1 待审核 3 审核通过   5 审核拒绝
+type ExtractIncome struct {
+	gorm.Model
+	State	int
+	Email	string
+	Reason	string
+	Value 	float64
+	UpdateUser uint
+}
+
+type ExtractIncomeLog struct {
+	gorm.Model
+	State int
+	Value float64
+	Reason,Email string
+	UpdateUser	uint
+	Balance   float64
+	LogType		int
+}
+
 func init() {
 	db := database.GetDB()
 	db.AutoMigrate(&Income{})
 	db.AutoMigrate(&IncomeLog{})
+	db.AutoMigrate(&ExtractIncome{})
+	db.AutoMigrate(&ExtractIncomeLog{})
 }
 
 func UpdateIncome(email string,totalIncome,incomeBalance float64,updateUser uint,operating string) bool {
@@ -64,4 +86,62 @@ func GetIncomeInfoById(email string) Income {
 	db := database.GetDB()
 	db.Where("email = ?",email).Last(&income)
 	return income
+}
+
+
+func SaveIncome(state int, email string, value,balance float64,update_user uint) bool {
+	tx := database.GetDB()
+	db := tx.Begin()
+
+	err := db.Create(&ExtractIncome{
+		State:state,
+		Email:email,
+		Value:value,
+	}).Error
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+	err = db.Model(&Income{}).Where("email = ?", email).Updates(
+		map[string]interface{}{"income_balance": balance,"update_user":update_user}).Error
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+
+	err = db.Create(&ExtractIncomeLog{
+		State:state,
+		Value:value,
+		Reason:"",
+		Email:email,
+		UpdateUser:update_user,
+		Balance:balance,
+		LogType:1,
+	}).Error
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+	db.Commit()
+	return true
+}
+
+
+func GetExtractIncomeListByEmail(email string,page,pageSize int) []ExtractIncome {
+	var extractIncome []ExtractIncome
+	db := database.GetDB()
+	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractIncome)
+	return extractIncome
+}
+
+
+func GetExtractIncomeCountByEmail(email string) int {
+	var count int
+	db := database.GetDB()
+	db.Model(&ExtractIncome{}).Where("email = ?",email).Count(&count)
+	return count
 }

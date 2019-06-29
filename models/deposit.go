@@ -179,7 +179,6 @@ func SaveExtractDeposit(state int, email string, value,balance float64,update_us
 		return false
 	}
 
-
 	err = db.Create(&DepositOperatingLog{
 		State:state,
 		Value:value,
