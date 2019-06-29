@@ -19,7 +19,6 @@ type IncomeLog struct {
 	TotalIncome float64
 	IncomeBalance    float64
 	UpdateUser uint
-	Err string
 }
 
 func init() {
@@ -49,7 +48,6 @@ func UpdateIncome(email string,totalIncome,incomeBalance float64,updateUser uint
 		TotalIncome: totalIncome,
 		IncomeBalance:incomeBalance,
 		UpdateUser:updateUser,
-		Err:err.Error(),
 	}).Error
 
 	if nil != err {

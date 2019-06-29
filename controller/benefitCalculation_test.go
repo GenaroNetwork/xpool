@@ -11,7 +11,7 @@ func TestAutoTransaction(t *testing.T) {
 
 	float0point3Gnx := big.NewInt(1000000000000000)
 
-	result,hash := AutoTransaction("1065482100@qq.com")
+	result,hash := AutoTransaction("1065482100@qq.com","123456")
 	//获取整数部分
 	resultTmp := big.NewInt(0)
 	resultTmp.Div(result,oneGnx)
@@ -32,4 +32,6 @@ func TestAutoTransaction(t *testing.T) {
 
 func TestUserLoanMiningBalance(t *testing.T) {
 	UserLoanMiningBalance()
+	ChechTransactionInfo()
+	Calculation()
 }
