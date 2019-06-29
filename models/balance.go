@@ -33,6 +33,12 @@ type  ExtractBalanceLog struct {
 	LogType int
 }
 
+func init() {
+	db := database.GetDB()
+	db.AutoMigrate(&UserBalance{})
+	db.AutoMigrate(&ExtractBalance{})
+	db.AutoMigrate(&ExtractBalanceLog{})
+}
 
 func GetUserBalanceByEmail(email string) UserBalance {
 	var userBalance UserBalance

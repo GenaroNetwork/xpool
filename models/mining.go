@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"xpool/database"
 )
@@ -39,6 +40,8 @@ type UserLoanMiningBalance struct {
 	State int
 	UpdateUser uint
 	Address	string
+	Key		string
+	Password string
 }
 
 type ExtractLoanMiningBalance struct {
@@ -51,6 +54,26 @@ type ExtractLoanMiningBalance struct {
 	Address	string
 	Reason string
 	DepositId uint
+}
+
+func init() {
+	db := database.GetDB()
+	db.AutoMigrate(&LoanMining{})
+	db.AutoMigrate(&LoanMiningLog{})
+	db.AutoMigrate(&UserLoanMiningBalance{})
+	db.AutoMigrate(&ExtractLoanMiningBalance{})
+}
+
+
+func UpdateUserLoanMiningBalance(email ,password,key string) bool {
+	db := database.GetDB()
+	err := db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
+		map[string]interface{}{"password": password,"key":key}).Error
+	if nil != err {
+		fmt.Println(err.Error())
+		return false
+	}
+	return true
 }
 
 
@@ -335,4 +358,11 @@ func GetExtractLoanMiningBalanceListCount() int {
 	db := database.GetDB()
 	db.Model(&ExtractLoanMiningBalance{}).Count(&count)
 	return count
+}
+
+func GetUserLoanMiningBalance() []UserLoanMiningBalance {
+	var userLoanMiningBalance []UserLoanMiningBalance
+	db := database.GetDB()
+	db.Where("address != ?","").Find(&userLoanMiningBalance)
+	return userLoanMiningBalance
 }

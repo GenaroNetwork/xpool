@@ -43,7 +43,13 @@ type ExtractDeposit struct {
 	UpdateUser uint
 }
 
-
+func init() {
+	db := database.GetDB()
+	db.AutoMigrate(&Deposit{})
+	db.AutoMigrate(&UserDepositBalance{})
+	db.AutoMigrate(&DepositOperatingLog{})
+	db.AutoMigrate(&ExtractDeposit{})
+}
 
 func SaveDeposit(deposit *Deposit)  {
 	db := database.GetDB()

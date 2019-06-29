@@ -14,6 +14,12 @@ type User struct {
 	Role        int		`json:"role"`
 }
 
+
+func init() {
+	db := database.GetDB()
+	db.AutoMigrate(&User{})
+}
+
 func SaveUser(user *User)  {
 	db := database.GetDB()
 	db.Create(user)

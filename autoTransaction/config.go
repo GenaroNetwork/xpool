@@ -3,7 +3,7 @@ package autoTransaction
 import "math/big"
 
 //server address
-var ServeUrl string = "http://127.0.0.1:9004"
+var ServeUrl string = "http://47.100.107.16:8554"
 
 
 var SubGas = big.NewInt(1000000000000000000)

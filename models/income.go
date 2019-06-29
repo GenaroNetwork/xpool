@@ -22,6 +22,11 @@ type IncomeLog struct {
 	Err string
 }
 
+func init() {
+	db := database.GetDB()
+	db.AutoMigrate(&Income{})
+	db.AutoMigrate(&IncomeLog{})
+}
 
 func UpdateIncome(email string,totalIncome,incomeBalance float64,updateUser uint,operating string) bool {
 	tx := database.GetDB()

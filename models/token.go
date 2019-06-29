@@ -13,6 +13,11 @@ type Token struct {
 	Role        int		`json:"role"`
 }
 
+func init() {
+	db := database.GetDB()
+	db.AutoMigrate(&Token{})
+}
+
 
 func SaveToken(token *Token)  {
 	db := database.GetDB()

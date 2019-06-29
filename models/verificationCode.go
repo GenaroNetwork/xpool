@@ -12,6 +12,11 @@ type VerificationCode struct {
 	Timestamp int64     `json:"timestamp"`
 }
 
+func init() {
+	db := database.GetDB()
+	db.AutoMigrate(&VerificationCode{})
+}
+
 func SaveVerificationCode(verificationCode *VerificationCode)  {
 	db := database.GetDB()
 	db.Create(verificationCode)

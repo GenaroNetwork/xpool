@@ -51,7 +51,7 @@ func RawTransaction(keyDir,Password string, Value *big.Int,Nonce uint64,ToAccoun
 	}
 	var To common.Address = common.HexToAddress(ToAccount)
 	var Gas uint64 = 90000
-	chain := big.NewInt(300)
+	chain := big.NewInt(200)
 	GasPrice := new(big.Int).SetUint64(18000000000)
 
 	tx := types.NewTransaction(Nonce, To, Value, Gas, GasPrice, []byte("information"))

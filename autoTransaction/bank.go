@@ -1,15 +1,14 @@
 package autoTransaction
 
 import (
-	"encoding/json"
-	"net/http"
 	"bytes"
-	"io/ioutil"
-	"github.com/GenaroNetwork/GenaroCore/common/hexutil"
-	"math/big"
+	"encoding/json"
 	"fmt"
-	"time"
+	"github.com/GenaroNetwork/GenaroCore/common/hexutil"
+	"io/ioutil"
+	"math/big"
 	"math/rand"
+	"net/http"
 )
 
 type UnlockAccountParameter struct {
@@ -105,7 +104,7 @@ func GetBalance(account string) []byte {
 }
 
 
-func SendRawTransaction(sendTxArgs string) bool {
+func SendRawTransaction(sendTxArgs string) (bool,[]byte) {
 	parameter := send_transaction{
 		Jsonrpc: "2.0",
 		Method:  "eth_sendRawTransaction",
@@ -116,22 +115,22 @@ func SendRawTransaction(sendTxArgs string) bool {
 	fmt.Println(string(input[:]))
 	result := httpPost(input)
 	if nil == result {
-		return false
+		return false,[]byte("")
 	}
 	fmt.Println(string(result[:]))
-	return true
+	return true,result
 }
 
-func SendtransactionAll()  {
-	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
-	Sendtransaction("0x75b6acf75064674dbd1ee275a85cda93f7d6dd92","0xc0ffc7800ce9c9ad27f89999748d938908fe066f")
-	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
-	Sendtransaction("0xc0ffc7800ce9c9ad27f89999748d938908fe066f","0xfd0a558fcfe003f055e43cfefa57830f50d1761d")
-	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
-	Sendtransaction("0xfd0a558fcfe003f055e43cfefa57830f50d1761d","0x1eb5c9a661856c19b0591a0bec8b42ced70e478e")
-	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
-	Sendtransaction("0x1eb5c9a661856c19b0591a0bec8b42ced70e478e","0x75b6acf75064674dbd1ee275a85cda93f7d6dd92")
-}
+//func SendtransactionAll()  {
+//	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
+//	Sendtransaction("0x75b6acf75064674dbd1ee275a85cda93f7d6dd92","0xc0ffc7800ce9c9ad27f89999748d938908fe066f")
+//	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
+//	Sendtransaction("0xc0ffc7800ce9c9ad27f89999748d938908fe066f","0xfd0a558fcfe003f055e43cfefa57830f50d1761d")
+//	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
+//	Sendtransaction("0xfd0a558fcfe003f055e43cfefa57830f50d1761d","0x1eb5c9a661856c19b0591a0bec8b42ced70e478e")
+//	time.Sleep(time.Duration(RandInt64(100,300))*time.Second)
+//	Sendtransaction("0x1eb5c9a661856c19b0591a0bec8b42ced70e478e","0x75b6acf75064674dbd1ee275a85cda93f7d6dd92")
+//}
 
 
 func RandInt64(min, max int64) int64 {
@@ -141,8 +140,13 @@ func RandInt64(min, max int64) int64 {
 	return rand.Int63n(max-min) + min
 }
 
+type RawTransactionResult struct {
+	ID      int    `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  string `json:"result"`
+}
 
-func Sendtransaction(account,To string)  {
+func Sendtransaction(account,To,keyDir,AccountPassword string) (*big.Int,string) {
 	result := GetBalance(account)
 	var getBalanceResult GetBalanceResult
 	if nil == result {
@@ -153,19 +157,28 @@ func Sendtransaction(account,To string)  {
 
 	}
 	balance  := big.NewInt(0)
-	value := big.NewInt(RandInt64(100000000000,10000000000000))
 	balance = balance.Sub(getBalanceResult.Result.ToInt(),SubGas)
 	if balance.Cmp(big.NewInt(0)) <= 0 {
-		return
+		return big.NewInt(0),""
 	}
+	balance = big.NewInt(10000000000000000)
 	Nonce := GetTransactionCount(account)
-	keyDir := keyDirMap[account]
-	transaction := RawTransaction(keyDir,AccountPassword,value,Nonce.Uint64(),To)
+	transaction := RawTransaction(keyDir,AccountPassword,balance,Nonce.Uint64(),To)
 	if "" == transaction {
-		return
+		return big.NewInt(0),""
 	}
-	SendRawTransaction(transaction)
-	fmt.Println(transaction)
+
+	resultBool, resultRawTra := SendRawTransaction(transaction)
+	if false ==resultBool {
+		return big.NewInt(0),""
+	}
+
+	var rawTransactionResult RawTransactionResult
+	err = json.Unmarshal(resultRawTra,&rawTransactionResult)
+	if err != nil {
+		return big.NewInt(0),""
+	}
+	return balance,rawTransactionResult.Result
 }
 
 
