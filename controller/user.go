@@ -31,6 +31,12 @@ func (u *user) Login(c *gin.Context) {
 	c.JSON(http.StatusOK,LoginServices(email,password))
 }
 
+func (u *user) Logout(c *gin.Context) {
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,LogoutServices(token))
+}
+
+
 func (u *user) GetUserByToken(c *gin.Context)  {
 	token := c.PostForm("token")
 	c.JSON(http.StatusOK,GetUserByTokenServices(token))
@@ -217,5 +223,15 @@ func ResetPasswordServices(token,password,newPassword string) Response  {
 	saltValue := GetRandomString(10)
 	newPasswordVal := MD5(saltValue+MD5(newPassword+saltValue)+saltValue)
 	models.UpdateUser(UserInfo.Email,saltValue,newPasswordVal)
+	models.DeleteToken(UserInfo.Email)
 	return ResponseFun("重置成功",200)
+}
+
+func LogoutServices(token string)  Response {
+	UserInfo :=  GetUserInfoByToken(token)
+	if "" == UserInfo.Email {
+		return ResponseFun("token 无效",10032)
+	}
+	models.DeleteToken(UserInfo.Email)
+	return ResponseFun("退出登陆成功",200)
 }

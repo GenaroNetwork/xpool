@@ -145,3 +145,69 @@ func GetExtractIncomeCountByEmail(email string) int {
 	db.Model(&ExtractIncome{}).Where("email = ?",email).Count(&count)
 	return count
 }
+
+
+func AdminGetExtractIncomeListByEmail(page,pageSize int) []ExtractIncome {
+	var extractIncome []ExtractIncome
+	db := database.GetDB()
+	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractIncome)
+	return extractIncome
+}
+
+
+func AdminGetExtractIncomeCountByEmail() int {
+	var count int
+	db := database.GetDB()
+	db.Model(&ExtractIncome{}).Count(&count)
+	return count
+}
+
+
+func GetExtractIncomeInfoById(id string) ExtractIncome {
+	var extractIncome ExtractIncome
+	db := database.GetDB()
+	db.Where("id = ?",id).Last(&extractIncome)
+	return extractIncome
+}
+
+
+
+func UpdateExtractIncome(state int,value float64,reason,email string,depositId,update_user uint) bool {
+	tx := database.GetDB()
+	db := tx.Begin()
+
+	err := db.Model(&ExtractIncome{}).Where("email = ? and id = ?", email,depositId).Updates(
+		map[string]interface{}{"state": state, "reason": reason,"update_user":update_user}).Error
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+	if  5 == state {
+		err = db.Model(&Income{}).Where("email = ?", email).Updates(
+			map[string]interface{}{"income_balance": value,"update_user":update_user}).Error
+	}
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+	err = db.Create(&ExtractIncomeLog{
+		State:state,
+		Value:value,
+		Reason:reason,
+		Email:email,
+		UpdateUser:update_user,
+		LogType:2,
+	}).Error
+
+	if nil != err {
+		db.Rollback()
+		return false
+	}
+
+	db.Commit()
+	return true
+}

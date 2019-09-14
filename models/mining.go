@@ -40,7 +40,7 @@ type UserLoanMiningBalance struct {
 	State int
 	UpdateUser uint
 	Address	string
-	Key		string
+	Key		string `gorm:"size:2000"`
 	Password string
 }
 
@@ -138,7 +138,7 @@ func GetLoanMiningInfoById(id string) LoanMining {
 
 
 
-func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,update_user uint,loan float64,address,operating string) bool {
+func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,update_user uint,loan float64,address,operating,key, pass string) bool {
 	tx := database.GetDB()
 	db := tx.Begin()
 
@@ -159,6 +159,8 @@ func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,up
 			State:1,
 			Address:address,
 			UpdateUser: update_user,
+			Key:key,
+			Password:pass,
 		}).Error
 	}else if "update" == operating && 3 == state {
 		err = db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
