@@ -161,7 +161,6 @@ func Sendtransaction(account,To,keyDir,AccountPassword string) (*big.Int,string)
 	if balance.Cmp(big.NewInt(0)) <= 0 {
 		return big.NewInt(0),""
 	}
-	balance = big.NewInt(1000000000000000000)
 	Nonce := GetTransactionCount(account)
 	transaction := RawTransaction(keyDir,AccountPassword,balance,Nonce.Uint64(),To)
 	if "" == transaction {

@@ -406,5 +406,5 @@ func DepositBalanceServices(token string) Response {
 	if "" == userInfo.Email {
 		return ResponseFun("token 无效",20014)
 	}
-	return ResponseFun(models.GetUserDepositBalanceByEmail(userInfo.Email).Balance,200)
+	return ResponseFun(Round(models.GetUserDepositBalanceByEmail(userInfo.Email).Balance,2),200)
 }

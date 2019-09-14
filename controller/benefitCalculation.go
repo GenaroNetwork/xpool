@@ -13,11 +13,11 @@ import (
 
 func BenefitCalculation()  {
 	for true {
-		time.Sleep(time.Second * 60)
+		time.Sleep(time.Second * 7200)
 		UserLoanMiningBalance()
-		time.Sleep(time.Second * 60)
+		time.Sleep(time.Second * 300)
 		ChechTransactionInfo()
-		time.Sleep(time.Second * 60)
+		time.Sleep(time.Second * 300)
 		Calculation()
 	}
 }
