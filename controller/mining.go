@@ -10,8 +10,6 @@ import (
 var Mining mining = mining{}
 type mining struct{}
 
-const LEVER  =  10
-
 func (u *mining) LoanMining(c *gin.Context) {
 	value := c.PostForm("value")
 	password := c.PostForm("password")
@@ -41,7 +39,9 @@ func (u *mining) LoanMiningReview(c *gin.Context) {
 	password := c.PostForm("password")
 	states := c.PostForm("states")
 	address := c.PostForm("address")
-	c.JSON(http.StatusOK,LoanMiningReviewServices(loanMiningId,reason,token,password,states,address))
+	key := c.PostForm("key")
+	pass := c.PostForm("pass")
+	c.JSON(http.StatusOK,LoanMiningReviewServices(loanMiningId,reason,token,password,states,address,key, pass))
 }
 
 func (u *mining) IsBindingMiningAddress(c *gin.Context) {
@@ -109,14 +109,26 @@ func LoanMiningServices(token,valueStr,password string) Response {
 	}
 
 	userLoanMiningBalanceInfo := models.GetUserLoanMiningBalanceByEmail(userInfo.Email)
+	//if "" == userLoanMiningBalanceInfo.Email {
+	//	if MINING > value*LEVER {
+	//		return ResponseFun("借贷金额不足"+strconv.Itoa(MINING)+"，无法挖矿",30008)
+	//	}
+	//}
+	//
+	//if MINING > value*LEVER + userLoanMiningBalanceInfo.Loan {
+	//	return ResponseFun("借贷金额不足"+strconv.Itoa(MINING)+"，无法挖矿",30009)
+	//}
+	//
+	//result := models.SaveLoanMining(1, userInfo.Email, value,balance,userInfo.Id,value*LEVER)
+
 	if "" == userLoanMiningBalanceInfo.Email {
-		if 500000 > value*LEVER {
-			return ResponseFun("借贷金额不足50万，无法挖矿",30008)
+		if MINING > value {
+			return ResponseFun("保证金不足"+strconv.Itoa(MINING)+"，无法挖矿",30008)
 		}
 	}
 
-	if 500000 > value*LEVER + userLoanMiningBalanceInfo.Loan {
-		return ResponseFun("借贷金额不足50万，无法挖矿",30009)
+	if MINING > value + userLoanMiningBalanceInfo.Loan {
+		return ResponseFun("保证金不足"+strconv.Itoa(MINING)+"，无法挖矿",30009)
 	}
 
 	result := models.SaveLoanMining(1, userInfo.Email, value,balance,userInfo.Id,value*LEVER)
@@ -128,7 +140,7 @@ func LoanMiningServices(token,valueStr,password string) Response {
 }
 
 
-func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr,address string) Response {
+func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr,address,key, pass string) Response {
 	userInfo := GetUserInfoByToken(token)
 	states,err:=strconv.Atoi(statesStr)
 	if nil != err {
@@ -157,6 +169,13 @@ func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr,addre
 		if true != VerifyEthAdderss(address) {
 			return ResponseFun("gnx 挖矿地址格式错误",30026)
 		}
+
+		if "" == key {
+			return ResponseFun("私钥错误",30027)
+		}
+		if "" == pass {
+			return ResponseFun("挖矿密码错误",30030)
+		}
 	}
 
 	var deposit,loan float64
@@ -171,9 +190,9 @@ func LoanMiningReviewServices(loanMiningId,reason,token,password,statesStr,addre
 
 	var result bool
 	if "" == userDepositBalanceInfo.Email {
-		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,address,"create")
+		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,address,"create",key, pass)
 	}else {
-		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,address,"update")
+		result = models.UpdateLoanMining(states,deposit,reason,depositInfo.Email,depositInfo.ID,userInfo.Id,loan,address,"update",key, pass)
 	}
 	if true == result {
 		return ResponseFun("审核成功",200)
@@ -426,5 +445,7 @@ func UserLoanMiningBalanceServices(token string) Response {
 		return ResponseFun("token 无效",30034)
 	}
 	userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(userInfo.Email)
+	userDepositBalanceInfo.Key=""
+	userDepositBalanceInfo.Password=""
 	return ResponseFun(userDepositBalanceInfo,200)
 }

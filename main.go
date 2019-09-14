@@ -49,6 +49,7 @@ func main() {
 		UserGroup.POST("/getuserbytoken",apiHandle("GetUserByToken"), controller.User.GetUserByToken)
 		UserGroup.POST("/forgetpassword",apiHandle("ForgetPassword"), controller.User.ForgetPassword)
 		UserGroup.POST("/resetpassword",apiHandle("ResetPassword"), controller.User.ResetPassword)
+		UserGroup.POST("/logout",apiHandle("Logout"), controller.User.Logout)
 	}
 
 	DepositGroup := router.Group("/deposit")
@@ -93,6 +94,8 @@ func main() {
 		IncomeGroup.POST("/income_balance",apiHandle("IncomeBalance"), controller.Income.IncomeBalance)
 		IncomeGroup.POST("/extract_income_balance",apiHandle("ExtractIncomeBalance"), controller.Income.ExtractIncomeBalance)
 		IncomeGroup.POST("/extract_income_list",apiHandle("ExtractIncomeList"), controller.Income.ExtractIncomeList)
+		IncomeGroup.POST("/admin_extract_income_list",apiHandle("ExtractIncomeList"), controller.Income.AdminExtractIncomeList)
+		IncomeGroup.POST("/extract_income_review",apiHandle("ExtractIncomeReview"), controller.Income.ExtractIncomeReview)
 	}
 
 	config := cors.DefaultConfig()
