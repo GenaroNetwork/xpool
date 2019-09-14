@@ -36,6 +36,22 @@ func (u *income) ExtractIncomeList(c *gin.Context) {
 	c.JSON(http.StatusOK,ExtractIncomeListServices(page,pageSize,token))
 }
 
+func (u *income) AdminExtractIncomeList(c *gin.Context) {
+	page := c.PostForm("page")
+	pageSize := c.PostForm("pageSize")
+	token := c.PostForm("token")
+	c.JSON(http.StatusOK,AdminExtractIncomeListServices(page,pageSize,token))
+}
+
+
+func (u *income) ExtractIncomeReview(c *gin.Context) {
+	reviewId := c.PostForm("reviewId")
+	reason := c.PostForm("reason")
+	token := c.PostForm("token")
+	password := c.PostForm("password")
+	statesStr := c.PostForm("states")
+	c.JSON(http.StatusOK,ExtractIncomeReviewServices(reviewId,reason,token,password,statesStr))
+}
 
 func IncomeTotalServices(token string) Response {
 	userInfo := GetUserInfoByToken(token)
@@ -125,4 +141,74 @@ func ExtractIncomeListServices(pageStr,pageSizeStr,token string) Response {
 		PageSize:pageSize,
 		Total:models.GetExtractIncomeCountByEmail(userInfo.Email),
 	},200)
+}
+
+
+func AdminExtractIncomeListServices(pageStr,pageSizeStr,token string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20014)
+	}
+	page,err:=strconv.Atoi(pageStr)
+	if nil != err {
+		page = 1
+	}
+	pageSize,err:=strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
+	}
+
+	if 0 >= page {
+		page = 1
+	}
+
+	if 100 < pageSize {
+		pageSize = 100
+	}
+
+	return ResponseFun(IncomeList{
+		ExtractIncome:models.AdminGetExtractIncomeListByEmail(page,pageSize),
+		Page:page,
+		PageSize:pageSize,
+		Total:models.AdminGetExtractIncomeCountByEmail(),
+	},200)
+}
+
+
+
+func ExtractIncomeReviewServices(reviewId,reason,token,password,statesStr string) Response {
+	userInfo := GetUserInfoByToken(token)
+	states,err:=strconv.Atoi(statesStr)
+	if nil != err {
+		return ResponseFun("参数错误",20024)
+	}
+
+	if 3 != states && 5 != states {
+		return ResponseFun("参数错误",20026)
+	}
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效",20016)
+	}
+	if !VerifyAdminRole(userInfo) {
+		return ResponseFun("无权限操作",20018)
+	}
+	if !CheckPassword(token,password) {
+		return ResponseFun("密码错误",20020)
+	}
+	extractIncomeInfo := models.GetExtractIncomeInfoById(reviewId)
+	if 1 != extractIncomeInfo.State {
+		return ResponseFun("操作错误",20022)
+	}
+
+	incomeInfo := models.GetIncomeInfoById(extractIncomeInfo.Email)
+	var value float64
+	if 5 == states {
+		value = extractIncomeInfo.Value + incomeInfo.IncomeBalance
+	}
+	result := models.UpdateExtractIncome(states,value,reason,extractIncomeInfo.Email,extractIncomeInfo.ID,userInfo.Id)
+	if true == result {
+		return ResponseFun("审核成功",200)
+	}else {
+		return ResponseFun("审核失败",20024)
+	}
 }
