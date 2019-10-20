@@ -152,6 +152,7 @@ type UserInfo struct {
 	Email	string `json:"email"`
 	Address string	`json:"address"`
 	Role    int		`json:"role"`
+	Mining string	`json:"mining"`
 }
 
 func GetUserByTokenServices(token string)  Response {
@@ -162,7 +163,8 @@ func GetUserByTokenServices(token string)  Response {
 	result := models.GetEmailByToken(token)
 	if time.Now().Unix() < result.Timestamp + 43200 {
 		user := models.GetUserByEmail(result.Email)
-		return ResponseFun(UserInfo{Email:user.Email,Address:user.Address,Role:user.Role,Id:user.ID},200)
+		userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(user.Email)
+		return ResponseFun(UserInfo{Email:user.Email,Address:user.Address,Role:user.Role,Id:user.ID,Mining:userDepositBalanceInfo.Address},200)
 	}
 	return ResponseFun("获取用户信息失败",10020)
 }
@@ -171,7 +173,8 @@ func GetUserInfoByToken(token string) UserInfo {
 	result := models.GetEmailByToken(token)
 	if time.Now().Unix() < result.Timestamp + 43200 {
 		user := models.GetUserByEmail(result.Email)
-		return UserInfo{Email:user.Email,Address:user.Address,Role:user.Role,Id:user.ID}
+		userDepositBalanceInfo := models.GetUserLoanMiningBalanceByEmail(user.Email)
+		return UserInfo{Email:user.Email,Address:user.Address,Role:user.Role,Id:user.ID,Mining:userDepositBalanceInfo.Address}
 	}
 	return UserInfo{}
 }
