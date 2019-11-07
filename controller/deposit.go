@@ -391,6 +391,37 @@ func AdminGetExtractDepositListServices(pageStr, pageSizeStr, token string) Resp
 	}, 200)
 }
 
+func ExtractIncomeUserBalanceServices(token, valueStr, password string) Response {
+	userInfo := GetUserInfoByToken(token)
+	if "" == userInfo.Address {
+		return ResponseFun("获取地址失败", 20026)
+	}
+
+	if !CheckPassword(token, password) {
+		return ResponseFun("密码错误", 20028)
+	}
+
+	value, err := strconv.ParseFloat(valueStr, 64)
+
+	if nil != err {
+		return ResponseFun("提取金额错误", 20030)
+	}
+
+	GetIncomeInfo := models.GetIncomeInfoById(userInfo.Email)
+
+	balance := Round(GetIncomeInfo.IncomeBalance-value, 3)
+
+	if 0 > balance {
+		return ResponseFun("余额不足", 20032)
+	}
+
+	result := models.SaveIncome(1, userInfo.Email, value, balance, userInfo.Id)
+	if true != result {
+		return ResponseFun("申请提取余额失败", 20034)
+	}
+	return ResponseFun("申请提取余额成功", 200)
+}
+
 func DepositBalanceServices(token string) Response {
 	userInfo := GetUserInfoByToken(token)
 	if "" == userInfo.Email {
