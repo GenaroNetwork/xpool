@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"strings"
-	"net/smtp"
 	"fmt"
+	"net/smtp"
+	"strings"
 )
 
 func SendToMail(user, password, host, to, subject, body, mailtype string) error {
@@ -21,7 +21,7 @@ func SendToMail(user, password, host, to, subject, body, mailtype string) error 
 	return err
 }
 
-func SendMail(Body,Subject,to string) bool {
+func SendMail(Body, Subject, to string) bool {
 	err := SendToMail(EMAILFROM, EMAILPASSWORD, EMAILHOST, to, Subject, Body, "html")
 	if err != nil {
 		fmt.Println(err)
@@ -31,17 +31,16 @@ func SendMail(Body,Subject,to string) bool {
 	}
 }
 
-func MailTemplate(code,to string) bool {
+func MailTemplate(code, to string) bool {
 	var Body = `
 		<html>
 			<body>
 				<h3>
-					`+ "genaro xpool verification code: "+ code +`
+					` + "genaro xpool verification code: " + code + `
 				</h3>
 			</body>
 		</html>
 		`
 	Subject := "genaro xpool"
-	return SendMail(Body, Subject,to)
+	return SendMail(Body, Subject, to)
 }
-

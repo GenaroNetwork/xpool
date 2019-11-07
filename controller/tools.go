@@ -3,42 +3,37 @@ package controller
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"math/rand"
-	"time"
-	"regexp"
-	"net/http"
 	"io/ioutil"
 	"math"
+	"math/rand"
+	"net/http"
+	"regexp"
+	"time"
 	"xpool/models"
 )
 
 type Response struct {
-	Code int `json:"code"`
+	Code int         `json:"code"`
 	Data interface{} `json:"data"`
 }
-
 
 /*
  * 封装返回的结果
  * status＝0 表示成功，status＝1表示未登录，status＝3 参数操作
  */
-func ResponseFun(data interface{},code int) Response {
+func ResponseFun(data interface{}, code int) Response {
 	result := Response{}
 	result.Code = code
 	result.Data = data
 	return result
 }
 
-
-
 // 生成32位MD5
-func MD5(text string) string{
+func MD5(text string) string {
 	ctx := md5.New()
 	ctx.Write([]byte(text))
 	return hex.EncodeToString(ctx.Sum(nil))
 }
-
-
 
 //生成随机字符串
 func GetRandomString(lengeth int) string {
@@ -52,7 +47,6 @@ func GetRandomString(lengeth int) string {
 	return string(result)
 }
 
-
 func VerifyEmailFormat(email string) bool {
 	pattern := `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*` //匹配电子邮箱
 	reg := regexp.MustCompile(pattern)
@@ -64,7 +58,6 @@ func VerifyEthAdderss(adderss string) bool {
 	reg := regexp.MustCompile(pattern)
 	return reg.MatchString(adderss)
 }
-
 
 func HttpGet(url string) []byte {
 	resp, err := http.Get(url)
@@ -79,19 +72,18 @@ func HttpGet(url string) []byte {
 	return body
 }
 
-
 func Round(f float64, n int) float64 {
 	n10 := math.Pow10(n)
 	return math.Trunc((f+0.5/n10)*n10) / n10
 }
 
-func CheckPassword(token,password string) bool {
-	UserInfo :=  GetUserInfoByToken(token)
+func CheckPassword(token, password string) bool {
+	UserInfo := GetUserInfoByToken(token)
 	if "" == UserInfo.Email {
 		return false
 	}
-	getUser :=  models.GetUserByEmail(UserInfo.Email)
-	passwordVal := MD5(getUser.SaltValue+MD5(password+getUser.SaltValue)+getUser.SaltValue)
+	getUser := models.GetUserByEmail(UserInfo.Email)
+	passwordVal := MD5(getUser.SaltValue + MD5(password+getUser.SaltValue) + getUser.SaltValue)
 	if passwordVal != getUser.Password {
 		return false
 	}
