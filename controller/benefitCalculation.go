@@ -11,7 +11,7 @@ import (
 	"xpool/models"
 )
 
-func BenefitCalculation()  {
+func BenefitCalculation() {
 	for true {
 		time.Sleep(time.Second * 7200)
 		UserLoanMiningBalance()
@@ -28,36 +28,36 @@ func BalanceFloat(result *big.Int) float64 {
 	float0point3Gnx := big.NewInt(1000000000000000)
 	//获取整数部分
 	resultTmp := big.NewInt(0)
-	resultTmp.Div(result,oneGnx)
+	resultTmp.Div(result, oneGnx)
 	//获取小数部分
 	resultTmp2 := big.NewInt(0)
-	resultTmp2.Mul(resultTmp,oneGnx)
+	resultTmp2.Mul(resultTmp, oneGnx)
 	//获取小数
 	resultTmp3 := big.NewInt(0)
-	resultTmp3.Sub(result,resultTmp2)
+	resultTmp3.Sub(result, resultTmp2)
 	//转化小数
 	resultTmp4 := big.NewInt(0)
-	resultTmp4.Div(resultTmp3,float0point3Gnx)
+	resultTmp4.Div(resultTmp3, float0point3Gnx)
 	//计算总和
-	return float64(resultTmp.Int64())+float64(resultTmp4.Int64())/1000.0
+	return float64(resultTmp.Int64()) + float64(resultTmp4.Int64())/1000.0
 }
 
 func UserLoanMiningBalance() {
 	userLoanMining := models.GetUserLoanMiningBalance()
-	for _,v:= range userLoanMining {
-		result,hash := AutoTransaction(v.Email,v.Password)
-		balanceFloat :=  BalanceFloat(result)
+	for _, v := range userLoanMining {
+		result, hash := AutoTransaction(v.Email, v.Password)
+		balanceFloat := BalanceFloat(result)
 		if 0 == balanceFloat {
 			continue
 		}
 		err := models.SaveAutoTransaction(&models.AutoTransaction{
-			Email:v.Email,
-			From:v.Address,
-			To:BENEFITCALCULATION,
-			Value:balanceFloat,
-			Hash:hash,
-			Tag:0,
-			Status:0,
+			Email:  v.Email,
+			From:   v.Address,
+			To:     BENEFITCALCULATION,
+			Value:  balanceFloat,
+			Hash:   hash,
+			Tag:    0,
+			Status: 0,
 		})
 		if err != nil {
 			fmt.Println(err)
@@ -73,21 +73,21 @@ func UserLoanMiningBalance() {
 * 4 入库，总收益 +=个人收益，可提现收益 += 个人收益
  */
 
-func AutoTransaction(email,pass string) (*big.Int,string) {
+func AutoTransaction(email, pass string) (*big.Int, string) {
 	result := models.GetUserLoanMiningBalanceByEmail(email)
 	d1 := []byte(result.Key)
 	err := ioutil.WriteFile("./keystore", d1, 0666)
 	if nil != err {
 		fmt.Println(err.Error())
 	}
-	return autoTransaction.Sendtransaction(result.Address,BENEFITCALCULATION,
-		"./keystore",pass)
+	return autoTransaction.Sendtransaction(result.Address, BENEFITCALCULATION,
+		"./keystore", pass)
 }
 
-func ChechTransactionInfo()  {
+func ChechTransactionInfo() {
 	result := models.GetAutoTransaction(0)
-	for _,v := range result {
-		chechResult :=  GetTransactionInfo(v.Hash)
+	for _, v := range result {
+		chechResult := GetTransactionInfo(v.Hash)
 		fmt.Println(chechResult)
 		if true == chechResult {
 			models.UpdateAutoTransaction(v.Hash)
@@ -95,9 +95,8 @@ func ChechTransactionInfo()  {
 	}
 }
 
-
 func GetTransactionInfo(hash string) bool {
-	result := HttpGet(TRANSACTIONINFO+hash)
+	result := HttpGet(TRANSACTIONINFO + hash)
 	if nil == result {
 		fmt.Println("获取交易失败")
 		return false
@@ -106,7 +105,7 @@ func GetTransactionInfo(hash string) bool {
 	err := json.Unmarshal(result, &transactionInfo)
 	if nil != err {
 		fmt.Println(string(result[:]))
-		fmt.Println("获取交易失败"+err.Error())
+		fmt.Println("获取交易失败" + err.Error())
 		return false
 	}
 
@@ -117,11 +116,11 @@ func GetTransactionInfo(hash string) bool {
 }
 
 //计算
-func Calculation()  {
+func Calculation() {
 	//获取当前总收益
 	result := models.GetAutoTransaction(1)
 	resultValtTotal := 0.0
-	for _,v := range result {
+	for _, v := range result {
 		resultValtTotal += v.Value
 	}
 	if 0 == resultValtTotal {
@@ -130,22 +129,22 @@ func Calculation()  {
 	//获取矿池挖矿资金
 	depositValtTotal := 0.0
 	userLoanMining := models.GetUserLoanMiningBalance()
-	for _,v := range userLoanMining {
+	for _, v := range userLoanMining {
 		depositValtTotal += v.Deposit
 	}
 	if 0 == depositValtTotal {
 		return
 	}
 	fmt.Println("########11")
-	for _,v := range userLoanMining {
-		userIncome := resultValtTotal*v.Deposit/depositValtTotal*(1-HANDLINGFEE)
+	for _, v := range userLoanMining {
+		userIncome := resultValtTotal * v.Deposit / depositValtTotal * (1 - HANDLINGFEE)
 		userIncome = Decimal(userIncome)
 		fmt.Println(userIncome)
 		getIncomeInfoById := models.GetIncomeInfoById(v.Email)
 		if 0 == getIncomeInfoById.ID {
-			models.UpdateIncome(v.Email,userIncome,userIncome,0,"create")
-		}else {
-			models.UpdateIncome(v.Email,getIncomeInfoById.TotalIncome+userIncome,getIncomeInfoById.IncomeBalance+userIncome,0,"update")
+			models.UpdateIncome(v.Email, userIncome, userIncome, 0, "create")
+		} else {
+			models.UpdateIncome(v.Email, getIncomeInfoById.TotalIncome+userIncome, getIncomeInfoById.IncomeBalance+userIncome, 0, "update")
 		}
 	}
 	models.UpdateAutoTransactionTag(1)
