@@ -6,54 +6,50 @@ import (
 	"xpool/database"
 )
 
-
-
 // State 1 待审核 3 审核通过   5 审核拒绝
 type LoanMining struct {
 	gorm.Model
-	State	int
-	Email	string
-	Loan    float64
-	Reason	string
-	Deposit 	float64
+	State      int
+	Email      string
+	Loan       float64
+	Reason     string
+	Deposit    float64
 	UpdateUser uint
 }
-
 
 type LoanMiningLog struct {
 	gorm.Model
-	State int
-	Deposit float64
-	Reason,Email string
-	UpdateUser	uint
-	Balance   float64
-	LogType		int
-	Loan     float64
+	State         int
+	Deposit       float64
+	Reason, Email string
+	UpdateUser    uint
+	Balance       float64
+	LogType       int
+	Loan          float64
 }
-
 
 type UserLoanMiningBalance struct {
 	gorm.Model
-	Email string
-	Deposit float64
-	Loan    float64
-	State int
+	Email      string
+	Deposit    float64
+	Loan       float64
+	State      int
 	UpdateUser uint
-	Address	string
-	Key		string `gorm:"size:2000"`
-	Password string
+	Address    string
+	Key        string `gorm:"size:2000"`
+	Password   string
 }
 
 type ExtractLoanMiningBalance struct {
 	gorm.Model
-	Email string
-	Deposit float64
-	Loan    float64
-	State int
+	Email      string
+	Deposit    float64
+	Loan       float64
+	State      int
 	UpdateUser uint
-	Address	string
-	Reason string
-	DepositId uint
+	Address    string
+	Reason     string
+	DepositId  uint
 }
 
 func init() {
@@ -64,11 +60,10 @@ func init() {
 	db.AutoMigrate(&ExtractLoanMiningBalance{})
 }
 
-
-func UpdateUserLoanMiningBalance(email ,password,key string) bool {
+func UpdateUserLoanMiningBalance(email, password, key string) bool {
 	db := database.GetDB()
 	err := db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
-		map[string]interface{}{"password": password,"key":key}).Error
+		map[string]interface{}{"password": password, "key": key}).Error
 	if nil != err {
 		fmt.Println(err.Error())
 		return false
@@ -76,24 +71,22 @@ func UpdateUserLoanMiningBalance(email ,password,key string) bool {
 	return true
 }
 
-
-
 func GetUserLoanMiningBalanceByEmail(email string) UserLoanMiningBalance {
 	var userLoanMiningBalance UserLoanMiningBalance
 	db := database.GetDB()
-	db.Where("email = ?",email).Last(&userLoanMiningBalance)
+	db.Where("email = ?", email).Last(&userLoanMiningBalance)
 	return userLoanMiningBalance
 }
 
-func SaveLoanMining(state int, email string, value,balance float64,update_user uint,loan float64) bool {
+func SaveLoanMining(state int, email string, value, balance float64, update_user uint, loan float64) bool {
 	tx := database.GetDB()
 	db := tx.Begin()
 
 	err := db.Create(&LoanMining{
-		State:state,
-		Email:email,
-		Deposit:value,
-		Loan:loan,
+		State:   state,
+		Email:   email,
+		Deposit: value,
+		Loan:    loan,
 	}).Error
 
 	if nil != err {
@@ -102,21 +95,21 @@ func SaveLoanMining(state int, email string, value,balance float64,update_user u
 	}
 
 	err = db.Model(&UserDepositBalance{}).Where("email = ?", email).Updates(
-		map[string]interface{}{"balance": balance,"update_user":update_user}).Error
+		map[string]interface{}{"balance": balance, "update_user": update_user}).Error
 	if nil != err {
 		db.Rollback()
 		return false
 	}
 
 	err = db.Create(&LoanMiningLog{
-		State:state,
-		Deposit:value,
-		Reason:"",
-		Email:email,
-		UpdateUser:update_user,
-		Balance:balance,
-		LogType:1,
-		Loan:loan,
+		State:      state,
+		Deposit:    value,
+		Reason:     "",
+		Email:      email,
+		UpdateUser: update_user,
+		Balance:    balance,
+		LogType:    1,
+		Loan:       loan,
 	}).Error
 
 	if nil != err {
@@ -128,43 +121,39 @@ func SaveLoanMining(state int, email string, value,balance float64,update_user u
 	return true
 }
 
-
 func GetLoanMiningInfoById(id string) LoanMining {
 	var loanMining LoanMining
 	db := database.GetDB()
-	db.Where("id = ?",id).Last(&loanMining)
+	db.Where("id = ?", id).Last(&loanMining)
 	return loanMining
 }
 
-
-
-func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,update_user uint,loan float64,address,operating,key, pass string) bool {
+func UpdateLoanMining(state int, deposit float64, reason, email string, depositId, update_user uint, loan float64, address, operating, key, pass string) bool {
 	tx := database.GetDB()
 	db := tx.Begin()
 
-	err := db.Model(&LoanMining{}).Where("email = ? and id = ?", email,depositId).Updates(
-		map[string]interface{}{"state": state, "reason": reason,"update_user":update_user}).Error
+	err := db.Model(&LoanMining{}).Where("email = ? and id = ?", email, depositId).Updates(
+		map[string]interface{}{"state": state, "reason": reason, "update_user": update_user}).Error
 
 	if nil != err {
 		db.Rollback()
 		return false
 	}
 
-
 	if "create" == operating && 3 == state {
 		err = db.Create(&UserLoanMiningBalance{
-			Email: email,
-			Deposit: deposit,
-			Loan:loan,
-			State:1,
-			Address:address,
+			Email:      email,
+			Deposit:    deposit,
+			Loan:       loan,
+			State:      1,
+			Address:    address,
 			UpdateUser: update_user,
-			Key:key,
-			Password:pass,
+			Key:        key,
+			Password:   pass,
 		}).Error
-	}else if "update" == operating && 3 == state {
+	} else if "update" == operating && 3 == state {
 		err = db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
-			map[string]interface{}{"deposit": deposit,"loan": loan,"update_user":update_user}).Error
+			map[string]interface{}{"deposit": deposit, "loan": loan, "update_user": update_user}).Error
 	}
 
 	if nil != err {
@@ -174,7 +163,7 @@ func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,up
 
 	if 5 == state {
 		err = db.Model(&UserDepositBalance{}).Where("email = ?", email).Updates(
-			map[string]interface{}{"balance": deposit,"update_user":update_user}).Error
+			map[string]interface{}{"balance": deposit, "update_user": update_user}).Error
 	}
 
 	if nil != err {
@@ -183,13 +172,13 @@ func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,up
 	}
 
 	err = db.Create(&LoanMiningLog{
-		State:state,
-		Deposit:deposit,
-		Reason:reason,
-		Email:email,
-		UpdateUser:update_user,
-		LogType:0,
-		Loan:loan,
+		State:      state,
+		Deposit:    deposit,
+		Reason:     reason,
+		Email:      email,
+		UpdateUser: update_user,
+		LogType:    0,
+		Loan:       loan,
 	}).Error
 
 	if nil != err {
@@ -201,12 +190,12 @@ func UpdateLoanMining(state int,deposit float64,reason,email string,depositId,up
 	return true
 }
 
-func ExtractLoanMining(depositId uint,loan,deposit float64,email string,update_user uint) bool {
+func ExtractLoanMining(depositId uint, loan, deposit float64, email string, update_user uint) bool {
 	tx := database.GetDB()
 	db := tx.Begin()
 
 	err := db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
-		map[string]interface{}{"loan": 0, "deposit": 0,"update_user":update_user}).Error
+		map[string]interface{}{"loan": 0, "deposit": 0, "update_user": update_user}).Error
 
 	if nil != err {
 		db.Rollback()
@@ -214,11 +203,11 @@ func ExtractLoanMining(depositId uint,loan,deposit float64,email string,update_u
 	}
 
 	err = db.Create(&ExtractLoanMiningBalance{
-		Email: email,
-		Deposit: deposit,
-		Loan:loan,
-		State:1,
-		DepositId:depositId,
+		Email:     email,
+		Deposit:   deposit,
+		Loan:      loan,
+		State:     1,
+		DepositId: depositId,
 	}).Error
 
 	if nil != err {
@@ -227,13 +216,13 @@ func ExtractLoanMining(depositId uint,loan,deposit float64,email string,update_u
 	}
 
 	err = db.Create(&LoanMiningLog{
-		State:1,
-		Deposit:deposit,
-		Reason:"",
-		Email:email,
-		UpdateUser:update_user,
-		LogType:1,
-		Loan:loan,
+		State:      1,
+		Deposit:    deposit,
+		Reason:     "",
+		Email:      email,
+		UpdateUser: update_user,
+		LogType:    1,
+		Loan:       loan,
 	}).Error
 
 	if nil != err {
@@ -245,21 +234,19 @@ func ExtractLoanMining(depositId uint,loan,deposit float64,email string,update_u
 	return true
 }
 
-
 func GetExtractLoanMiningBalanceInfoById(id string) ExtractLoanMiningBalance {
 	var extractLoanMiningBalance ExtractLoanMiningBalance
 	db := database.GetDB()
-	db.Where("id = ?",id).Last(&extractLoanMiningBalance)
+	db.Where("id = ?", id).Last(&extractLoanMiningBalance)
 	return extractLoanMiningBalance
 }
 
-
-func UpdateExtractLoanMining(state int,deposit,loan float64,reason,email string,depositId,update_user uint) bool {
+func UpdateExtractLoanMining(state int, deposit, loan float64, reason, email string, depositId, update_user uint) bool {
 	tx := database.GetDB()
 	db := tx.Begin()
 
-	err := db.Model(&ExtractLoanMiningBalance{}).Where("email = ? and id = ?", email,depositId).Updates(
-		map[string]interface{}{"state": state, "reason": reason,"update_user":update_user}).Error
+	err := db.Model(&ExtractLoanMiningBalance{}).Where("email = ? and id = ?", email, depositId).Updates(
+		map[string]interface{}{"state": state, "reason": reason, "update_user": update_user}).Error
 
 	if nil != err {
 		db.Rollback()
@@ -268,10 +255,10 @@ func UpdateExtractLoanMining(state int,deposit,loan float64,reason,email string,
 
 	if 3 == state {
 		err = db.Model(&UserDepositBalance{}).Where("email = ?", email).Updates(
-			map[string]interface{}{"balance": deposit,"update_user":update_user}).Error
-	}else if 5 == state {
+			map[string]interface{}{"balance": deposit, "update_user": update_user}).Error
+	} else if 5 == state {
 		err = db.Model(&UserLoanMiningBalance{}).Where("email = ?", email).Updates(
-			map[string]interface{}{"loan": loan, "deposit": deposit,"update_user":update_user}).Error
+			map[string]interface{}{"loan": loan, "deposit": deposit, "update_user": update_user}).Error
 	}
 
 	if nil != err {
@@ -280,13 +267,13 @@ func UpdateExtractLoanMining(state int,deposit,loan float64,reason,email string,
 	}
 
 	err = db.Create(&LoanMiningLog{
-		State:state,
-		Deposit:deposit,
-		Reason:reason,
-		Email:email,
-		UpdateUser:update_user,
-		LogType:2,
-		Loan:loan,
+		State:      state,
+		Deposit:    deposit,
+		Reason:     reason,
+		Email:      email,
+		UpdateUser: update_user,
+		LogType:    2,
+		Loan:       loan,
 	}).Error
 
 	if nil != err {
@@ -298,31 +285,26 @@ func UpdateExtractLoanMining(state int,deposit,loan float64,reason,email string,
 	return true
 }
 
-
-
-func GetLoanMiningListByEmail(email string,page,pageSize int) []LoanMining {
+func GetLoanMiningListByEmail(email string, page, pageSize int) []LoanMining {
 	var loanMining []LoanMining
 	db := database.GetDB()
-	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&loanMining)
+	db.Where("email = ?", email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&loanMining)
 	return loanMining
 }
-
 
 func GetLoanMiningListCountByEmail(email string) int {
 	var count int
 	db := database.GetDB()
-	db.Model(&LoanMining{}).Where("email = ?",email).Count(&count)
+	db.Model(&LoanMining{}).Where("email = ?", email).Count(&count)
 	return count
 }
 
-
-func GetLoanMiningList(page,pageSize int) []LoanMining {
+func GetLoanMiningList(page, pageSize int) []LoanMining {
 	var loanMining []LoanMining
 	db := database.GetDB()
 	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&loanMining)
 	return loanMining
 }
-
 
 func GetLoanMiningListCount() int {
 	var count int
@@ -331,29 +313,26 @@ func GetLoanMiningListCount() int {
 	return count
 }
 
-
-func GetExtractLoanMiningBalanceListByEmail(email string,page,pageSize int) []ExtractLoanMiningBalance {
+func GetExtractLoanMiningBalanceListByEmail(email string, page, pageSize int) []ExtractLoanMiningBalance {
 	var extractLoanMiningBalance []ExtractLoanMiningBalance
 	db := database.GetDB()
-	db.Where("email = ?",email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractLoanMiningBalance)
+	db.Where("email = ?", email).Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractLoanMiningBalance)
 	return extractLoanMiningBalance
 }
-
 
 func GetExtractLoanMiningBalanceListCountByEmail(email string) int {
 	var count int
 	db := database.GetDB()
-	db.Model(&ExtractLoanMiningBalance{}).Where("email = ?",email).Count(&count)
+	db.Model(&ExtractLoanMiningBalance{}).Where("email = ?", email).Count(&count)
 	return count
 }
 
-func GetExtractLoanMiningBalanceList(page,pageSize int) []ExtractLoanMiningBalance {
+func GetExtractLoanMiningBalanceList(page, pageSize int) []ExtractLoanMiningBalance {
 	var extractLoanMiningBalance []ExtractLoanMiningBalance
 	db := database.GetDB()
 	db.Limit(pageSize).Offset((page - 1) * pageSize).Order("created_at desc").Find(&extractLoanMiningBalance)
 	return extractLoanMiningBalance
 }
-
 
 func GetExtractLoanMiningBalanceListCount() int {
 	var count int
@@ -365,6 +344,6 @@ func GetExtractLoanMiningBalanceListCount() int {
 func GetUserLoanMiningBalance() []UserLoanMiningBalance {
 	var userLoanMiningBalance []UserLoanMiningBalance
 	db := database.GetDB()
-	db.Where("address != ?","").Find(&userLoanMiningBalance)
+	db.Where("address != ?", "").Find(&userLoanMiningBalance)
 	return userLoanMiningBalance
 }

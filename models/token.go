@@ -7,10 +7,10 @@ import (
 
 type Token struct {
 	gorm.Model
-	Email	string	`json:"email"`
-	TokenRes	string	`gorm:"index:Token"`
-	Timestamp int64     `json:"timestamp"`
-	Role        int		`json:"role"`
+	Email     string `json:"email"`
+	TokenRes  string `gorm:"index:Token"`
+	Timestamp int64  `json:"timestamp"`
+	Role      int    `json:"role"`
 }
 
 func init() {
@@ -18,8 +18,7 @@ func init() {
 	db.AutoMigrate(&Token{})
 }
 
-
-func SaveToken(token *Token)  {
+func SaveToken(token *Token) {
 	db := database.GetDB()
 	db.Create(token)
 }
@@ -27,13 +26,12 @@ func SaveToken(token *Token)  {
 func GetEmailByToken(token string) Token {
 	var tokenRes Token
 	db := database.GetDB()
-	db.Where("token_res = ?",token).Last(&tokenRes)
+	db.Where("token_res = ?", token).Last(&tokenRes)
 	return tokenRes
 }
 
-
-func DeleteToken( email string)  {
+func DeleteToken(email string) {
 	var token Token
 	db := database.GetDB()
-	db.Delete(&token,"email = ?", email)
+	db.Delete(&token, "email = ?", email)
 }
