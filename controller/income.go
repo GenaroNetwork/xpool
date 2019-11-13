@@ -137,35 +137,6 @@ func ExtractIncomeListServices(pageStr, pageSizeStr, token string) Response {
 	}, 200)
 }
 
-func AdminExtractIncomeListServices(pageStr, pageSizeStr, token string) Response {
-	userInfo := GetUserInfoByToken(token)
-	if "" == userInfo.Email {
-		return ResponseFun("token 无效", 20014)
-	}
-	page, err := strconv.Atoi(pageStr)
-	if nil != err {
-		page = 1
-	}
-	pageSize, err := strconv.Atoi(pageSizeStr)
-	if nil != err {
-		pageSize = 100
-	}
-
-	if 0 >= page {
-		page = 1
-	}
-
-	if 100 < pageSize {
-		pageSize = 100
-	}
-
-	return ResponseFun(IncomeList{
-		ExtractIncome: models.AdminGetExtractIncomeListByEmail(page, pageSize),
-		Page:          page,
-		PageSize:      pageSize,
-		Total:         models.AdminGetExtractIncomeCountByEmail(),
-	}, 200)
-}
 
 func ExtractIncomeReviewServices(reviewId, reason, token, password, statesStr string) Response {
 	userInfo := GetUserInfoByToken(token)

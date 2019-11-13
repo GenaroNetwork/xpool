@@ -391,35 +391,34 @@ func AdminGetExtractDepositListServices(pageStr, pageSizeStr, token string) Resp
 	}, 200)
 }
 
-func ExtractIncomeUserBalanceServices(token, valueStr, password string) Response {
+func AdminExtractIncomeListServices(pageStr, pageSizeStr, token string) Response {
 	userInfo := GetUserInfoByToken(token)
-	if "" == userInfo.Address {
-		return ResponseFun("获取地址失败", 20026)
+	if "" == userInfo.Email {
+		return ResponseFun("token 无效", 20014)
 	}
-
-	if !CheckPassword(token, password) {
-		return ResponseFun("密码错误", 20028)
-	}
-
-	value, err := strconv.ParseFloat(valueStr, 64)
-
+	page, err := strconv.Atoi(pageStr)
 	if nil != err {
-		return ResponseFun("提取金额错误", 20030)
+		page = 1
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if nil != err {
+		pageSize = 100
 	}
 
-	GetIncomeInfo := models.GetIncomeInfoById(userInfo.Email)
-
-	balance := Round(GetIncomeInfo.IncomeBalance-value, 3)
-
-	if 0 > balance {
-		return ResponseFun("余额不足", 20032)
+	if 0 >= page {
+		page = 1
 	}
 
-	result := models.SaveIncome(1, userInfo.Email, value, balance, userInfo.Id)
-	if true != result {
-		return ResponseFun("申请提取余额失败", 20034)
+	if 100 < pageSize {
+		pageSize = 100
 	}
-	return ResponseFun("申请提取余额成功", 200)
+
+	return ResponseFun(IncomeList{
+		ExtractIncome: models.AdminGetExtractIncomeListByEmail(page, pageSize),
+		Page:          page,
+		PageSize:      pageSize,
+		Total:         models.AdminGetExtractIncomeCountByEmail(),
+	}, 200)
 }
 
 func DepositBalanceServices(token string) Response {
